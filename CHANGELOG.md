@@ -2,9 +2,9 @@
 
 Reader: someone using or following Mantelet who wants to know what changed.
 
-Last reviewed: Batch 1, 5 October 2026
+Last reviewed: 5 October 2026
 
-This file lists only changes a user would notice. Internal cleanups are not listed here. The full history is in [docs/development/batch-log.md](docs/development/batch-log.md).
+This file lists changes a user would notice.
 
 ## 0.0.1 (not released)
 

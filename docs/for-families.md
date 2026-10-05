@@ -2,9 +2,9 @@
 
 Reader: a parent, a teacher, or someone who was hurt, looking for help now. No technical knowledge needed.
 
-Last reviewed: Batch 2, 5 October 2026
+Last reviewed: 5 October 2026
 
-This page is a first draft. It covers steps you can take today. The full guide comes in Batch 7, which will list facts country by country. We do not guess. What is on this page has been checked.
+This page is a first draft. It covers steps you can take today. The full guide comes, which will list facts country by country. We do not guess. What is on this page has been checked.
 
 ## If someone is in danger right now
 
@@ -46,7 +46,7 @@ The United States has a law called the TAKE IT DOWN Act. It sets rules for how w
 - Exactly how to talk to a child about this.
 - What the law says where you live.
 
-Batch 7 is planned to cover these. We will not guess in the meantime.
+later is planned to cover these. We will not guess in the meantime.
 
 ## What Mantelet cannot do for you
 

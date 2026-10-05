@@ -2,7 +2,7 @@
 
 Reader: a parent, teacher, or researcher who wants to know what Mantelet cannot do.
 
-Last reviewed: Batch 1, 5 October 2026
+Last reviewed: 5 October 2026
 
 This page lists what Mantelet cannot do. It will grow as we learn more. We would rather you know the limits than trust the project too much.
 

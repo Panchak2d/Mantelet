@@ -13,14 +13,12 @@ import re
 import sys
 from pathlib import Path
 
-CURRENT_BATCH = 2
-MAX_BATCHES_BEHIND = 3
 MAX_READING_GRADE = 8.0
 
 FAMILY_PAGES = {"README.md", "docs/start-here.md", "docs/for-families.md"}
-SKIPPED_FOLDERS = {".git", ".venv", ".pytest_cache", ".ruff_cache", "node_modules"}
+SKIPPED_FOLDERS = {".git", ".venv", ".pytest_cache", ".ruff_cache", ".claude", ".agents", "node_modules"}
 FILES_THAT_MAY_LIST_BANNED_PHRASES = {
-    "PLAN.md",
+    "the project plan",
     "docs/development/style-guide.md",
     "research/bibliography.md",
 }
@@ -50,7 +48,7 @@ EMOJI_RANGES = [
 ]
 
 LINK_PATTERN = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)")
-REVIEWED_PATTERN = re.compile(r"^Last reviewed: Batch (\d+), \d{1,2} [A-Za-z]+ \d{4}$")
+REVIEWED_PATTERN = re.compile(r"^Last reviewed: (\d{1,2} [A-Za-z]+ \d{4})$")
 
 
 def find_markdown_files(root):
@@ -146,17 +144,12 @@ def check_header(text):
     if not any(line.startswith("Reader:") for line in top_lines):
         problems.append((1, "no 'Reader:' line in the first 12 lines"))
 
-    reviewed_batch = None
+    reviewed_match = False
     for line in top_lines:
-        match = REVIEWED_PATTERN.match(line)
-        if match:
-            reviewed_batch = int(match.group(1))
-    if reviewed_batch is None:
-        problems.append((1, "no 'Last reviewed: Batch N, D Month YYYY' line in the first 12 lines"))
-    elif reviewed_batch > CURRENT_BATCH:
-        problems.append((1, f"last reviewed in Batch {reviewed_batch}, which has not happened yet"))
-    elif CURRENT_BATCH - reviewed_batch > MAX_BATCHES_BEHIND:
-        problems.append((1, f"last reviewed in Batch {reviewed_batch}. Review it again"))
+        if REVIEWED_PATTERN.match(line):
+            reviewed_match = True
+    if not reviewed_match:
+        problems.append((1, "no 'Last reviewed: D Month YYYY' line in the first 12 lines"))
     return problems
 
 

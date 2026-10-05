@@ -2,7 +2,7 @@
 
 Reader: a parent, a teacher, or anyone new to this project. You do not need to know anything technical.
 
-Last reviewed: Batch 1, 5 October 2026
+Last reviewed: 5 October 2026
 
 ## What this is
 
@@ -33,7 +33,7 @@ The project is also a learning project. The owner is learning Python and machine
 - **You want to know what this cannot do:** read [Limits](docs/limits.md).
 - **You want to help or learn the code:** read [Contributing](CONTRIBUTING.md) and [Setup](docs/development/setup.md).
 - **You are a researcher:** read [Research](docs/research/README.md) and the [claims ledger](research/claims-ledger.md).
-- **You want the full plan:** read [PLAN.md](PLAN.md).
+- **You want the full plan:** read the project plan.
 
 ## Safety rules
 

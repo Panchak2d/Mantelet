@@ -2,9 +2,9 @@
 
 Reader: a beginner who wants to run the project on an EndeavourOS laptop (Arch-based Linux). You need a terminal and basic comfort typing commands.
 
-Last reviewed: Batch 1, 5 October 2026
+Last reviewed: 5 October 2026
 
-This page gets the project running on the CPU. The graphics card is not used in Batch 1. We have not yet tested these steps on EndeavourOS itself. If a step fails, open a [documentation issue](https://github.com/Panchak2d/mantelet/issues/new/choose) and say which step.
+This page gets the project running on the CPU. The graphics card is not used. We have not yet tested these steps on EndeavourOS itself. If a step fails, open a [documentation issue](https://github.com/Panchak2d/mantelet/issues/new/choose) and say which step.
 
 ## What you get
 
@@ -69,12 +69,12 @@ All of these were checked on 5 October 2026 against PyPI, the Arch package pages
 
 ## Your graphics card and PyTorch (for later)
 
-Nothing in Batch 1 uses PyTorch. This section is a note for later batches.
+Nothing uses PyTorch. This section is a note for later steps.
 
 - Your laptop has an NVIDIA MX330 with about 2 GB of video memory. It is a Pascal card (compute capability 6.1). We confirmed the card family and memory from spec sheets. We have not yet checked the compute capability on your own machine. To check it later, run `nvidia-smi` once the driver is installed.
-- PyTorch maintainers wrote on the PyTorch developer forum that the CUDA 12.8 and newer builds drop Pascal cards. They also wrote that version 2.14 is the last release with CUDA 12.x builds. After that, a Pascal card needs a PyTorch built from source. This is **Reported**. Batch 6 checks it again before we pin PyTorch.
-- Because of that, the plan is CPU first. Batches 1 to 5 run on the CPU.
-- 2 GB of video memory cannot realistically run the image editing models used in Batches 9 to 12. Those batches need an outside GPU. See [PLAN.md](../../PLAN.md) section 10.
+- PyTorch maintainers wrote on the PyTorch developer forum that the CUDA 12.8 and newer builds drop Pascal cards. They also wrote that version 2.14 is the last release with CUDA 12.x builds. After that, a Pascal card needs a PyTorch built from source. This is **Reported**. We will check it again before we pin PyTorch.
+- Because of that, the plan is CPU first. later steps run on the CPU.
+- 2 GB of video memory cannot realistically run the image editing models used in later steps. Those steps need an outside GPU. 
 
 ## One-time step for the maintainer
 

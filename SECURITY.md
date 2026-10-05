@@ -2,7 +2,7 @@
 
 Reader: anyone who found a security problem in this project's code or repository settings.
 
-Last reviewed: Batch 1, 5 October 2026
+Last reviewed: 5 October 2026
 
 ## What counts as a security problem
 

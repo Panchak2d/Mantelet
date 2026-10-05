@@ -2,9 +2,9 @@
 
 Reader: the project owner and any beginner who wants to learn Python by following this project.
 
-Last reviewed: Batch 1, 5 October 2026
+Last reviewed: 5 October 2026
 
-This page lists what to learn, batch by batch. Each batch has homework before it and one small task you write yourself. Your tasks go in the [learning folder](../../learning/README.md).
+This page lists what to learn, step by step. Each step has homework before it and one small task you write yourself. Your tasks go in the [learning folder](../../learning/README.md).
 
 ## Free places to learn
 
@@ -15,11 +15,11 @@ This page lists what to learn, batch by batch. Each batch has homework before it
 | Testing | The pytest documentation |
 | NumPy basics | The "absolute beginners" guide on numpy.org |
 
-We have not yet checked each of these links in the repository. Batch 2 checks them.
+We have not yet checked each of these links in the repository. We will check them.
 
 ## The ladder
 
-| Batch | Python skills | Your task |
+| Step | Python skills | Your task |
 |---|---|---|
 | 1 | Install Python, virtual environments, pip, running a script, reading a test, basic Git | Run the tests. Change one word in a document and watch the docs checker react |
 | 2 | Files, strings, lists, dictionaries, reading code written by others | Add one banned phrase to the checker and write a test for it |
@@ -36,4 +36,4 @@ We have not yet checked each of these links in the repository. Batch 2 checks th
 
 ## How a task is reviewed
 
-At the start of the next batch, the work is read. We say what is good, what is wrong, and why. Then it either moves into the main code or stays as practice.
+At the start of the next step, the work is read. We say what is good, what is wrong, and why. Then it either moves into the main code or stays as practice.

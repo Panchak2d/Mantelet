@@ -2,9 +2,9 @@
 
 Reader: a curious learner or researcher who wants to understand the technical idea.
 
-Last reviewed: Batch 1, 5 October 2026
+Last reviewed: 5 October 2026
 
-This page is mostly empty. It is filled in as the experiments happen: the first protection test is planned for Batch 6. We do not describe how something works until we have built and tested it.
+This page is mostly empty. It will be filled in as the experiments happen. We do not describe how something works until we have built and tested it.
 
 ## The idea we want to test
 
@@ -19,7 +19,7 @@ We do not know if this works well enough to matter. See [Limits](limits.md).
 - Whether the effect survives shrinking, cropping, and compressing the photo.
 - Whether someone who knows about our method can remove it.
 
-The plan for this is in the [research overview](research/README.md). The exact numbers are fixed in Batch 2, before any experiment runs.
+The plan for this is in the [research overview](research/README.md).
 
 ## What goes on this page later
 

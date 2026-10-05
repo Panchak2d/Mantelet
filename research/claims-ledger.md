@@ -2,7 +2,7 @@
 
 Reader: a researcher, reviewer, or reader who wants to check how we know what we say.
 
-Last reviewed: Batch 1, 5 October 2026
+Last reviewed: 5 October 2026
 
 Every public claim in this project is listed here. Each has one label:
 
@@ -17,8 +17,8 @@ No claim is Measured yet. Nothing has been run.
 | C-001 | Simple tricks that hide changes in a photo tend to stop working once someone attacks them on purpose | Reported | Honig, Rando, Carlini, Tramer, arXiv 2406.12027. Listed in the plan as checked to exist. We have not repeated the work |
 | C-002 | Results on harmless stand-in edits carry over to harmful edits | Guess | Our own assumption. Every report must say so |
 | C-003 | NCMEC runs Take It Down for images of people under 18, and it works with a hash so the image itself is not sent | Reported | NCMEC pages at missingkids.org, read 5 October 2026 |
-| C-004 | NVIDIA Pascal cards (such as the MX330) are not supported by PyTorch CUDA 12.8 and newer builds. Version 2.14 is the last with CUDA 12.x builds | Reported | PyTorch developer forum posts by PyTorch maintainers, read 5 October 2026. Recheck in Batch 6 |
-| C-005 | The MX330 has about 2 GB of video memory, which is too small for the image editing models planned for Batches 9 to 12 | Guess | Spec sheets confirm the memory size. The conclusion about the models is our reasoning and is checked in Batch 9 |
+| C-004 | NVIDIA Pascal cards (such as the MX330) are not supported by PyTorch CUDA 12.8 and newer builds. Version 2.14 is the last with CUDA 12.x builds | Reported | PyTorch developer forum posts by PyTorch maintainers, read 5 October 2026. Recheck |
+| C-005 | The MX330 has about 2 GB of video memory, which is too small for the image editing models planned for later steps | Guess | Spec sheets confirm the memory size. The conclusion about the models is our reasoning and is checked |
 | C-006 | Mantelet protects photos from being misused | Not claimed | We make no such claim. See [Limits](../docs/limits.md) |
 | C-007 | The Belmont Report exists and establishes three principles for research ethics: respect for persons, beneficence, and justice | Reported | US Department of Health and Human Services Office for Human Research Protections, read 5 October 2026 |
 | C-008 | NCMEC's Take It Down service works with a hash so the image itself is not sent | Reported | NCMEC pages at missingkids.org, confirmed 5 October 2026 |

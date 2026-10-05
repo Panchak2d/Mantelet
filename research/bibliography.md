@@ -2,9 +2,9 @@
 
 Reader: a researcher who wants the list of sources and how far each has been checked.
 
-Last reviewed: Batch 2, 5 October 2026
+Last reviewed: 5 October 2026
 
-Every entry below was checked in Batch 2 against the real source. The arXiv ID, authors, title, and year were confirmed. Where the project plan listed something differently, the note column says so. We have not repeated the work in any paper. Until we do, their results are labelled Reported in the [claims ledger](claims-ledger.md).
+Every entry below was checked against the real source. The arXiv ID, authors, title, and year were confirmed. Where the project plan listed something differently, the note column says so. We have not repeated the work in any paper. Until we do, their results are labelled Reported in the [claims ledger](claims-ledger.md).
 
 ## Protection research
 
@@ -54,26 +54,26 @@ The newer protection papers report their own results. Until we repeat their work
 
 | Topic | Where | Checked |
 |---|---|---|
-| Python basics | The official Python tutorial at docs.python.org. CS50's Introduction to Programming with Python (Harvard, free). Automate the Boring Stuff with Python (free online) | Batch 2 |
-| Git and GitHub | The Pro Git book (free at git-scm.com) | Batch 2 |
-| Testing | The pytest documentation | Batch 2 |
-| NumPy basics | The "absolute beginners" guide on numpy.org | Batch 2 |
-| What a neural network is | 3Blue1Brown's neural network video series on YouTube | Batch 2 |
-| Hands-on deep learning | Dive into Deep Learning (d2l.ai, free). PyTorch "Learn the Basics" tutorials (pytorch.org/tutorials) | Batch 2 |
-| Optional full course | fast.ai Practical Deep Learning | Batch 2 |
+| Python basics | The official Python tutorial at docs.python.org. CS50's Introduction to Programming with Python (Harvard, free). Automate the Boring Stuff with Python (free online) | later |
+| Git and GitHub | The Pro Git book (free at git-scm.com) | later |
+| Testing | The pytest documentation | later |
+| NumPy basics | The "absolute beginners" guide on numpy.org | later |
+| What a neural network is | 3Blue1Brown's neural network video series on YouTube | later |
+| Hands-on deep learning | Dive into Deep Learning (d2l.ai, free). PyTorch "Learn the Basics" tutorials (pytorch.org/tutorials) | later |
+| Optional full course | fast.ai Practical Deep Learning | later |
 
 ## Other sources
 
 | Source | Used for | Checked |
 |---|---|---|
-| NCMEC pages on Take It Down and the CyberTipline (missingkids.org) | The family page and claim C-003 | Batch 1 |
-| PyTorch developer forum posts on Pascal support | Claim C-004 and the setup page | Batch 1 |
-| Arch Linux package pages for `uv` | The setup page | Batch 1 |
-| Python Developer's Guide, status of Python versions | The Python version choice | Batch 1 |
-| PyPI project pages for pytest, ruff, hatchling, and torch | The pinned versions | Batch 1 |
-| The Belmont Report (hhs.gov/ohrp) | The data and ethics policy | Batch 2 |
-| StopNCII.org | The family page | Batch 2 |
-| Statistics Done Wrong (statisticsdonewrong.com) | The reading list | Batch 2 |
-| Khan Academy statistics course | The reading list | Batch 2 |
-| C2PA specification (c2pa.org) | The provenance track reading list | Batch 2 |
-| Content Authenticity Initiative (contentauthenticity.org) | The provenance track reading list | Batch 2 |
+| NCMEC pages on Take It Down and the CyberTipline (missingkids.org) | The family page and claim C-003 | later |
+| PyTorch developer forum posts on Pascal support | Claim C-004 and the setup page | later |
+| Arch Linux package pages for `uv` | The setup page | later |
+| Python Developer's Guide, status of Python versions | The Python version choice | later |
+| PyPI project pages for pytest, ruff, hatchling, and torch | The pinned versions | later |
+| The Belmont Report (hhs.gov/ohrp) | The data and ethics policy | later |
+| StopNCII.org | The family page | later |
+| Statistics Done Wrong (statisticsdonewrong.com) | The reading list | later |
+| Khan Academy statistics course | The reading list | later |
+| C2PA specification (c2pa.org) | The provenance track reading list | later |
+| Content Authenticity Initiative (contentauthenticity.org) | The provenance track reading list | later |

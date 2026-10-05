@@ -2,7 +2,7 @@
 
 Reader: anyone changing code, settings, or documents in this project.
 
-Last reviewed: Batch 1, 5 October 2026
+Last reviewed: 5 October 2026
 
 Documents must never fall behind the project. When you change something in the left column, check every document in the right column. If one describes something you changed, update it in the same change. If none needs updating, say so in your pull request or patch notes and say why.
 
@@ -29,10 +29,8 @@ Documents must never fall behind the project. When you change something in the l
 | `src/mantelet/` | `docs/development/architecture.md`, `docs/how-it-works.md`, `README.md` |
 | `tests/` | `docs/development/architecture.md` |
 
-## Each batch
+## Each step
 
-1. Check each area the batch touched against the tables above.
-2. Update `CURRENT_BATCH` at the top of `scripts/check_docs.py`.
+1. Check each area the step touched against the tables above.
 3. Update `CHANGELOG.md` only for changes a user would notice. Match the style already in the file.
-4. Add an entry to `docs/development/batch-log.md`.
-5. If a real change has no document, write the small missing piece now or add it to the backlog in `PLAN.md`.
+5. If a real change has no document, write the small missing piece now or add it to the backlog in `the project plan`.

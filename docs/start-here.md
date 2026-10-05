@@ -2,7 +2,7 @@
 
 Reader: a parent, teacher, or victim with no technical background.
 
-Last reviewed: Batch 1, 5 October 2026
+Last reviewed: 5 October 2026
 
 This page tells you what Mantelet is, who it is for, and why it exists. It also tells you what it cannot do.
 

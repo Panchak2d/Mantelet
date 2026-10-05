@@ -2,7 +2,7 @@
 
 Reader: someone who wants to help, from first-timer to experienced developer.
 
-Last reviewed: Batch 1, 5 October 2026
+Last reviewed: 5 October 2026
 
 Thank you for helping. This page tells you how to start, what we accept, and what we always refuse.
 
@@ -35,7 +35,7 @@ For anything big, open an issue first and describe your idea.
 
 1. Run the three checks: `ruff check .`, `pytest`, and `python scripts/check_docs.py`.
 2. Look at [docs/development/docs-sync.md](docs/development/docs-sync.md). Update every document that your change affects, in the same pull request.
-3. Write comments only when the code would otherwise be hard to understand. A comment says why the code does something. It never mentions batches, plans, or rules.
+3. Write comments only when the code would otherwise be hard to understand. A comment says why the code does something. It never mentions steps, plans, or rules.
 4. Name tests after the behaviour they check.
 
 ## Licences

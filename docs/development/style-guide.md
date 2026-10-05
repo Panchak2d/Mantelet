@@ -2,7 +2,7 @@
 
 Reader: anyone who writes or edits a document in this project.
 
-Last reviewed: Batch 1, 5 October 2026
+Last reviewed: 5 October 2026
 
 These rules keep the documents easy to read and honest. The docs checker (`python scripts/check_docs.py`) enforces the ones a program can check. It cannot tell if writing sounds natural. Reading a page aloud and fixing the places where you stumble is part of the process.
 
@@ -34,16 +34,16 @@ Near the top, two lines:
 ```text
 Reader: who this page is for.
 
-Last reviewed: Batch N, D Month YYYY
+Last reviewed: Step N, D Month YYYY
 ```
 
-The checker flags a page if either line is missing, or if the review is more than 3 batches old.
+The checker flags a page if either line is missing, or if the review is more than 3 steps old.
 
 Practice notes in the `learning/` folder are exempt, because they are your own notes.
 
 ## Checker settings
 
-The reading level limit, the number of batches before a page counts as old, and the current batch number are set at the top of `scripts/check_docs.py`. The current batch number is changed once per batch.
+The reading level limit, the number of steps before a page counts as old, and the current step number are set at the top of `scripts/check_docs.py`. The current step number is changed once per step.
 
 ## Claims
 

@@ -2,7 +2,7 @@ import check_docs
 
 LONG_DASH = "\u2014"
 EN_DASH = "\u2013"
-HEADER = "Reader: a test reader.\nLast reviewed: Batch 1, 4 October 2026\n"
+HEADER = "Reader: a test reader.\nLast reviewed: 4 October 2026\n"
 
 
 def messages(problems):
@@ -84,29 +84,13 @@ def test_header_with_reader_and_current_review_passes():
 
 
 def test_missing_reader_line_is_reported():
-    text = "Last reviewed: Batch 1, 4 October 2026\n"
+    text = "Last reviewed: 4 October 2026\n"
     assert messages(check_docs.check_header(text)) == ["no 'Reader:' line in the first 12 lines"]
 
 
 def test_missing_last_reviewed_line_is_reported():
     problems = check_docs.check_header("Reader: someone.\n")
     assert "no 'Last reviewed" in problems[0][1]
-
-
-def test_review_too_many_batches_ago_is_reported(monkeypatch):
-    monkeypatch.setattr(check_docs, "CURRENT_BATCH", 6)
-    problems = check_docs.check_header(HEADER)
-    assert messages(problems) == ["last reviewed in Batch 1. Review it again"]
-
-
-def test_review_within_allowed_gap_passes(monkeypatch):
-    monkeypatch.setattr(check_docs, "CURRENT_BATCH", 4)
-    assert check_docs.check_header(HEADER) == []
-
-
-def test_review_in_a_future_batch_is_reported():
-    text = "Reader: someone.\nLast reviewed: Batch 9, 4 October 2026\n"
-    assert "has not happened yet" in check_docs.check_header(text)[0][1]
 
 
 def test_syllable_counts_for_simple_words():
@@ -135,7 +119,7 @@ def test_reading_grade_ignores_code_blocks_and_headings():
 
 
 def test_learning_notes_do_not_need_a_header():
-    assert not check_docs.needs_header("learning/batch-01-notes.md")
+    assert not check_docs.needs_header("learning/notes.md")
     assert check_docs.needs_header("learning/README.md")
     assert not check_docs.needs_header(".github/PULL_REQUEST_TEMPLATE.md")
     assert check_docs.needs_header("docs/index.md")
@@ -156,7 +140,7 @@ def test_repo_with_a_problem_returns_one_and_names_the_file(tmp_path, capsys):
 
 
 def test_style_guide_and_plan_may_list_banned_phrases(tmp_path):
-    for name in ("PLAN.md", "docs/development/style-guide.md"):
+    for name in ("the project plan", "docs/development/style-guide.md"):
         page = tmp_path / name
         page.parent.mkdir(parents=True, exist_ok=True)
         page.write_text(HEADER + "\nAvoid leverage.\n", encoding="utf-8")

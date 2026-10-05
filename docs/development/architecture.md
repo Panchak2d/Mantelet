@@ -2,7 +2,7 @@
 
 Reader: a contributor or learner who wants to know what is in each folder.
 
-Last reviewed: Batch 1, 5 October 2026
+Last reviewed: 5 October 2026
 
 There is no machine learning code yet. This page lists what exists today. It grows as the code grows.
 
@@ -11,7 +11,7 @@ There is no machine learning code yet. This page lists what exists today. It gro
 | Path | What it holds |
 |---|---|
 | `README.md`, `SAFETY.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `CHANGELOG.md` | The front door and the rules |
-| `../PLAN.md` | The project plan, the batch list, and the backlog |
+| `../the project plan` | The project plan |
 | `LICENSE`, `LICENSE-docs.md` | Apache-2.0 for the code, CC BY 4.0 for the text |
 | `pyproject.toml` | Package name, Python version, and the checking tools |
 | `.python-version` | The exact Python version used for development |

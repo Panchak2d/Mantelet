@@ -2,9 +2,9 @@
 
 Reader: a researcher or contributor who wants to know who we defend against and what we try to stop.
 
-Last reviewed: Batch 2, 5 October 2026
+Last reviewed: 5 October 2026
 
-This page writes down who might attack, what they can do, and what we are trying to stop. The research plan in [PLAN.md](../../PLAN.md) section 9 fixes the threats and the attacker levels. This page explains them in full.
+This page writes down who might attack, what they can do, and what we are trying to stop. The research plan fixes the threats and the attacker levels. This page explains them in full.
 
 ## What we try to stop
 
@@ -58,7 +58,7 @@ We test against attackers who know different amounts. A published photo cannot b
 | 0 | Nothing | Runs a normal edit tool on the photo | Someone pastes a photo into a free app |
 | 1 | Knows Mantelet exists | Adds a step that might remove a known kind of protection | Runs a basic cleanup filter they heard about |
 | 2 | Knows the general method | Tries the standard attacks on that kind of protection | Tries the attacks named in the papers we read |
-| 3 | Has our code | Runs our own red team tools on the photo | Uses the tools we build in Batch 5 |
+| 3 | Has our code | Runs our own red team tools on the photo | Uses the tools we build |
 | 4 | Builds an attack specifically against Mantelet | Designs a new attack aimed at our method | Tunes an attack to our exact protection |
 | 5 | Saved our photos and attacks later with newer models | Waits for a stronger model, then attacks | Keeps the photo, attacks it next year |
 
@@ -70,9 +70,9 @@ We are not modelling a determined human adversary with unlimited time and comput
 
 We are also not modelling the case where the attacker already has many photos of the person from before any protection was added. One unprotected photo defeats the protection. See [Limits](../limits.md).
 
-## How this maps to the batches
+## How this maps to the steps
 
-| Batch | What it does for the threat model |
+| Step | What it does for the threat model |
 |---|---|
 | 2 | This page and the [test plan](test-plan.md) are written |
 | 3 | The image toolkit builds the transformations platforms apply |

@@ -2,7 +2,7 @@
 
 Reader: a researcher or contributor who wants to know what the research track is trying to do.
 
-Last reviewed: Batch 1, 5 October 2026
+Last reviewed: 5 October 2026
 
 This page is a short summary. The full research design is written in three new pages:
 
@@ -38,15 +38,15 @@ Out of scope: video, audio, closed commercial models, and anything that needs us
 
 ## How we decide
 
-We do not use average similarity scores as the main result. We use attacker success rate, noticeable change rate, and survival rate after normal photo processing. Batch 2 defines each one and fixes the pass and fail numbers before any experiment.
+We do not use average similarity scores as the main result. We use attacker success rate, noticeable change rate, and survival rate after normal photo processing. later defines each one and fixes the pass and fail numbers before any experiment.
 
 ## Decision gates
 
 | Gate | After | Question |
 |---|---|---|
-| 1 | Batch 6 | Does a protection on a small model survive the red team within the visibility limit? |
-| 2 | Batch 10 | Does it work on a real editing pipeline after JPEG and resize? |
-| 3 | Batch 12 | Does it survive attacker levels 0 to 4 and transfer to at least one other model? |
+| 1 | later | Does a protection on a small model survive the red team within the visibility limit? |
+| 2 | later | Does it work on a real editing pipeline after JPEG and resize? |
+| 3 | later | Does it survive attacker levels 0 to 4 and transfer to at least one other model? |
 
 A "no" at a gate is a useful result. We publish it, and move effort to the guides.
 

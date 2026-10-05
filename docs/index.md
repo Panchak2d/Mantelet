@@ -2,7 +2,7 @@
 
 Reader: anyone who opened the docs folder and wants to know which page to read.
 
-Last reviewed: Batch 1, 5 October 2026
+Last reviewed: 5 October 2026
 
 Mantelet is a research project. It does not protect anyone yet. Read [Limits](limits.md) before anything else if you are thinking of relying on it.
 
@@ -20,11 +20,10 @@ Mantelet is a research project. It does not protect anyone yet. Read [Limits](li
 3. [Docs sync](development/docs-sync.md): which documents to update when something changes.
 4. [Architecture](development/architecture.md): what is in each folder.
 5. [Python path](learning/python-path.md) and [research topics](learning/research-topics.md): what to learn and where.
-6. [Batch log](development/batch-log.md): what was done, batch by batch.
 
 ## If you are a researcher
 
 1. [Research overview](research/README.md): the question, the threats, the decision gates.
 2. [Claims ledger](../research/claims-ledger.md): every public claim, with a label.
 3. [Bibliography](../research/bibliography.md): sources.
-4. [How it works](how-it-works.md): the technical idea. This page is mostly empty until later batches.
+4. [How it works](how-it-works.md): the technical idea. This page is mostly empty until later steps.

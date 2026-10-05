@@ -2,15 +2,13 @@
 
 Reader: anyone who meets a technical word in these documents and wants a plain meaning.
 
-Last reviewed: Batch 1, 5 October 2026
+Last reviewed: 5 October 2026
 
 Words are listed in alphabetical order. We add a word the first time a document uses it.
 
 **Adversarial perturbation.** A tiny change to a photo that people cannot see but that confuses a computer program. The word "perturbation" just means "small change".
 
 **Attacker success rate.** How often an attack still works. For example, how often a face match still succeeds after we protect a photo. A lower number is better for the defender.
-
-**Batch.** One planned piece of work in this project, done in one chat. The list is in [PLAN.md](../PLAN.md).
 
 **Claims ledger.** The public list of every claim the project makes, each with a label that says how we know it. See [research/claims-ledger.md](../research/claims-ledger.md).
 
