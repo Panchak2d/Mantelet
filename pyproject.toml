@@ -1,0 +1,49 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mantelet"
+dynamic = ["version"]
+description = "An open research project on making AI-made fake nude images harder to produce from ordinary photos."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [{ name = "Panchak2d" }]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.1.1,<10",
+    "ruff>=0.16.10,<0.17",
+]
+
+[project.urls]
+Homepage = "https://github.com/Panchak2d/mantelet"
+Source = "https://github.com/Panchak2d/mantelet"
+Issues = "https://github.com/Panchak2d/mantelet/issues"
+
+[tool.hatch.version]
+path = "src/mantelet/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mantelet"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["scripts"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
