@@ -14,7 +14,7 @@ Nothing here has been tested yet.
 
 ## The question
 
-Can we make it much harder to turn an ordinary photo into a fake nude image, by adding changes to the photo that people cannot see?
+Can we make it much harder to turn an ordinary photo into a fake sexual or nude image, by adding changes to the photo that people cannot see?
 
 ## What we try to stop
 

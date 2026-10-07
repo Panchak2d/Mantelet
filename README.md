@@ -8,7 +8,7 @@ Last reviewed: 5 October 2026
 
 Mantelet is a research project. It asks one question:
 
-> Can we make it much harder to turn an ordinary photo of a woman or a child into a fake nude image?
+> Can we make it much harder to turn an ordinary photo of a woman or a child into a fake sexual or nude image?
 
 We do not know the answer yet.
 

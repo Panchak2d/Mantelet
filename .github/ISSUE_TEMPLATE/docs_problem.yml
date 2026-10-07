@@ -1,0 +1,33 @@
+name: Documentation problem
+description: A page is unclear, wrong, out of date, or has a broken link
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not attach any image of a person.
+  - type: input
+    id: page
+    attributes:
+      label: Which page?
+      description: For example "docs/start-here.md".
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is the problem?
+      description: Say what confused you, what is wrong, or what is missing.
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Do you have a suggestion?
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety check
+      options:
+        - label: This report contains no images of people and no abusive material.
+          required: true

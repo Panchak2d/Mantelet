@@ -2,7 +2,7 @@
 
 Reader: a researcher who wants to know exactly how we measure success and failure, and what numbers count as passing.
 
-Last reviewed: 5 October 2026
+Last reviewed: 8 October 2026
 
 This page fixes the pass and fail numbers before any experiment runs. The plan as planned requires this. The numbers below are chosen with written reasons. They will not change after we see results. If we change any of them later, we say so here and explain why.
 
@@ -48,7 +48,11 @@ We apply these transformations to every protected photo before testing whether t
 | Crop | Centre crop to 80 percent of the resized image |
 | JPEG | Quality 75 |
 
-These numbers are fixed. They are a stand-in for what real platforms do, not an exact copy of any one site. Real sites differ. We chose 512 because it is a common display size. We chose quality 75 because it is the middle of the range sites use. We chose 80 percent crop because it is a moderate crop that does not remove the face.
+These numbers are fixed. They are a stand-in for what real platforms do, not an exact copy of any one site. Real sites differ. We chose quality 75 because it sits inside the range that studies report for Facebook (see claim C-016 in the [claims ledger](../../research/claims-ledger.md)). Those studies also report that sites shrink photos only above 1080 to 2048 pixels, so 512 is harsher than any site we found (C-017). We keep it because common editing models work at about 512 pixels, so an attacker may shrink the photo this far anyway (C-018). We chose 80 percent crop as a moderate crop. No study we found says sites crop this way (C-019).
+
+This pipeline is therefore a harsh stress test, not a copy of a platform. A protection that survives it is a stronger result. A protection that fails it has not yet been shown to fail on a real site.
+
+The crop keeps the face only when the face sits near the middle of the photo. A full-body photo has its face near the top, and the centre crop cuts the head off. Test images must be framed around the face, such as the aligned faces in common face datasets. The numbers above are unchanged.
 
 ## The transformations and attack tools
 
@@ -56,7 +60,7 @@ These are fixed and built in steps 3 and 5.
 
 | What | Built in | Purpose |
 |---|---|---|
-| JPEG, resize, crop, blur, noise | later | The changes platforms apply |
+| JPEG, resize, crop, blur, noise | built (`src/mantelet/image.py`) | The changes platforms apply |
 | Red team attack tools | later | The attacks for levels 2 and 3 |
 
 The red team attacks use methods that are already public. They attack our own protections. They do not target people. See [SAFETY.md](../../SAFETY.md) rule 7.

@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "mantelet"
 dynamic = ["version"]
-description = "An open research project on making AI-made fake nude images harder to produce from ordinary photos."
+description = "An open research project on making AI-made fake intimate images harder to produce from ordinary photos."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"

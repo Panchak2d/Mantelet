@@ -16,7 +16,15 @@ from pathlib import Path
 MAX_READING_GRADE = 8.0
 
 FAMILY_PAGES = {"README.md", "docs/start-here.md", "docs/for-families.md"}
-SKIPPED_FOLDERS = {".git", ".venv", ".pytest_cache", ".ruff_cache", ".claude", ".agents", "node_modules"}
+SKIPPED_FOLDERS = {
+    ".git",
+    ".venv",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".claude",
+    ".agents",
+    "node_modules",
+}
 FILES_THAT_MAY_LIST_BANNED_PHRASES = {
     "the project plan",
     "docs/development/style-guide.md",

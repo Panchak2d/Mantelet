@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from PIL import Image
 
 from mantelet import image
@@ -91,3 +92,49 @@ def test_platform_pipeline_matches_running_steps_separately():
     manual = image.jpeg_compress(image.centre_crop(image.resize_long_side(img, 512), 0.8), 75)
     via_steps = np.asarray(manual)
     assert np.array_equal(via_pipeline, via_steps)
+
+
+def test_load_image_applies_exif_rotation(tmp_path):
+    file = tmp_path / "rotated.jpg"
+    img = Image.new("RGB", (40, 20))
+    exif = img.getexif()
+    exif[274] = 6
+    img.save(file, exif=exif)
+    assert image.load_image(file).size == (20, 40)
+
+
+@pytest.mark.parametrize("target", [0, -5])
+def test_resize_long_side_rejects_target_below_one(target):
+    with pytest.raises(ValueError):
+        image.resize_long_side(make_image(), target)
+
+
+def test_resize_long_side_keeps_extreme_aspect_ratio_at_least_one_pixel():
+    assert image.resize_long_side(make_image((1000, 1)), 512).size == (512, 1)
+
+
+@pytest.mark.parametrize("keep", [-0.1, 0, 1.5])
+def test_centre_crop_rejects_keep_outside_zero_to_one(keep):
+    with pytest.raises(ValueError):
+        image.centre_crop(make_image(), keep)
+
+
+def test_centre_crop_rejects_crop_with_no_pixels():
+    with pytest.raises(ValueError):
+        image.centre_crop(make_image((100, 100)), 0.001)
+
+
+@pytest.mark.parametrize("quality", [0, 101])
+def test_jpeg_compress_rejects_quality_outside_range(quality):
+    with pytest.raises(ValueError):
+        image.jpeg_compress(make_image(), quality)
+
+
+def test_gaussian_blur_rejects_negative_radius():
+    with pytest.raises(ValueError):
+        image.gaussian_blur(make_image(), -1.0)
+
+
+def test_add_gaussian_noise_rejects_negative_std():
+    with pytest.raises(ValueError):
+        image.add_gaussian_noise(make_image(), std=-1.0)

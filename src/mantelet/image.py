@@ -16,15 +16,19 @@ import io
 from pathlib import Path
 
 import numpy as np
-from PIL import Image, ImageFilter
+from PIL import Image, ImageFilter, ImageOps
 
 Resampling = Image.Resampling
 
 
 def load_image(path: str | Path) -> Image.Image:
-    """Open an image file and return it as RGB."""
+    """Open an image file and return it as RGB, upright.
+
+    Phone photos store their rotation as a tag instead of turning the pixels.
+    The tag is applied here so every later step sees the photo the way a person does.
+    """
     with Image.open(path) as img:
-        return img.convert("RGB")
+        return ImageOps.exif_transpose(img).convert("RGB")
 
 
 def save_image(img: Image.Image, path: str | Path, quality: int = 90) -> None:
@@ -34,21 +38,27 @@ def save_image(img: Image.Image, path: str | Path, quality: int = 90) -> None:
 
 def resize_long_side(img: Image.Image, target: int = 512) -> Image.Image:
     """Resize so the longer edge is ``target`` pixels, keeping the aspect ratio."""
+    if target < 1:
+        raise ValueError(f"target must be at least 1 pixel, got {target}")
     width, height = img.size
     if width >= height:
         new_width = target
-        new_height = int(height * target / width)
+        new_height = max(1, int(height * target / width))
     else:
         new_height = target
-        new_width = int(width * target / height)
+        new_width = max(1, int(width * target / height))
     return img.resize((new_width, new_height), Resampling.LANCZOS)
 
 
 def centre_crop(img: Image.Image, keep: float = 0.8) -> Image.Image:
     """Crop the central ``keep`` fraction of the width and height."""
+    if not 0 < keep <= 1:
+        raise ValueError(f"keep must be above 0 and at most 1, got {keep}")
     width, height = img.size
     new_width = int(width * keep)
     new_height = int(height * keep)
+    if new_width < 1 or new_height < 1:
+        raise ValueError(f"keep={keep} leaves nothing of a {width}x{height} image")
     left = (width - new_width) // 2
     top = (height - new_height) // 2
     return img.crop((left, top, left + new_width, top + new_height))
@@ -56,6 +66,8 @@ def centre_crop(img: Image.Image, keep: float = 0.8) -> Image.Image:
 
 def jpeg_compress(img: Image.Image, quality: int = 75) -> Image.Image:
     """Encode to JPEG in memory and decode back. JPEG is lossy, so pixels change."""
+    if not 1 <= quality <= 100:
+        raise ValueError(f"quality must be from 1 to 100, got {quality}")
     buffer = io.BytesIO()
     img.save(buffer, format="JPEG", quality=quality)
     buffer.seek(0)
@@ -65,6 +77,8 @@ def jpeg_compress(img: Image.Image, quality: int = 75) -> Image.Image:
 
 def gaussian_blur(img: Image.Image, radius: float = 1.0) -> Image.Image:
     """Apply a Gaussian blur. A larger radius blurs more."""
+    if radius < 0:
+        raise ValueError(f"radius must not be negative, got {radius}")
     return img.filter(ImageFilter.GaussianBlur(radius=radius))
 
 
@@ -76,6 +90,8 @@ def add_gaussian_noise(
     ``seed`` makes the output reproducible. Experiments pass an integer and log
     it so a run can be repeated.
     """
+    if std < 0:
+        raise ValueError(f"std must not be negative, got {std}")
     rng = np.random.default_rng(seed)
     array = np.asarray(img, dtype=np.float32)
     noise = rng.normal(0.0, std, array.shape).astype(np.float32)

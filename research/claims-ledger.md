@@ -2,7 +2,7 @@
 
 Reader: a researcher, reviewer, or reader who wants to check how we know what we say.
 
-Last reviewed: 5 October 2026
+Last reviewed: 8 October 2026
 
 Every public claim in this project is listed here. Each has one label:
 
@@ -29,3 +29,9 @@ No claim is Measured yet. Nothing has been run.
 | C-013 | A 25 percent noticeable change rate in a 2AFC test represents volunteers guessing, not seeing the change | Guess | Our reasoning from perceptual test conventions. Not yet validated by our own study |
 | C-014 | A 50 percentage point drop in attacker success is a meaningful deterrent to casual attackers | Guess | Our reasoning from the Honig et al. results. Literature shows smaller drops are often undone by adaptive attacks |
 | C-015 | A 50 percent survival rate after platform processing is the minimum for practical use | Guess | Our reasoning. If protection washes out below half, it is not useful in practice |
+| C-016 | Facebook recompresses uploaded JPEG photos at quality factors of roughly 61 to 92, depending on the study. Twitter recompresses at 85 only when the upload is 85 or higher | Reported | arXiv 2504.20658 (TrueFake), arXiv 1810.02062, arXiv 1806.03787. Values differ between studies and change over time. Official platform documents not found. Read 8 October 2026 |
+| C-017 | Sites shrink a photo only above a size limit. Reported limits: Instagram 1080, WhatsApp 1600, Facebook 960 or 2048 (2016) and 720 wide (2025), Twitter or X 2048 (2016) and 1200 wide (2025) | Reported | arXiv 1610.06347 (2016), arXiv 2504.20658 (2025). The two studies disagree for Facebook and X, so platforms change. Official platform documents not found. Read 8 October 2026 |
+| C-018 | Common image editing models work at about 512 pixels, so an attacker may shrink a photo to that size before editing | Guess | Our prior knowledge, not searched. Check before Batch 6 |
+| C-019 | Social sites crop uploaded photos by 20 percent from the centre | Not claimed | No source found. Instagram only limits the shape of the photo. The 80 percent crop is our own choice |
+| C-020 | Protective perturbations often fail under ordinary transformations such as JPEG and blur, and optimising against random transformations (EOT) helps little at medium strength. Several transformations in a row can fail where one alone does not | Reported | Zhao et al., CVPR 2024, arXiv 2312.00084. arXiv 2604.23688. arXiv 2512.07228 reports that uniform sampling of transformations is suboptimal. We found no paper that tests crop position on its own. Read 8 October 2026 |
+| C-021 | Where a crop starts, compared with the 8 pixel grid used by JPEG and by image models, changes whether a protection survives | Guess | Our reasoning. The fixed pipeline always starts its crop 3 pixels off the 8 pixel grid on the long side, so it tests one case only. A related result for patch-based vision models is in arXiv 2510.13643. Test before Gate 1 |

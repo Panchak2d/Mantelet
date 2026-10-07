@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install the project and its checking tools
+        run: python -m pip install -e ".[dev]"
+      - name: Style check
+        run: ruff check .
+      - name: Tests
+        run: pytest
+      - name: Docs checker
+        run: python scripts/check_docs.py

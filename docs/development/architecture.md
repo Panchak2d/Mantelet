@@ -2,7 +2,7 @@
 
 Reader: a contributor or learner who wants to know what is in each folder.
 
-Last reviewed: 5 October 2026
+Last reviewed: 8 October 2026
 
 There is no machine learning code yet. This page lists what exists today. It grows as the code grows.
 
@@ -19,8 +19,8 @@ There is no machine learning code yet. This page lists what exists today. It gro
 | `docs/` | The documents for readers and contributors |
 | `research/` | The claims ledger and the bibliography |
 | `learning/` | Practice tasks written by the project owner |
-| `scripts/` | Small tools that run from the command line |
-| `src/mantelet/` | The Python package. It only holds a version number so far |
+| `scripts/` | Small tools that run from the command line, such as the docs checker and `demo_pipeline.py` |
+| `src/mantelet/` | The Python package. `image.py` loads and saves images and applies the changes platforms make to a photo |
 | `tests/` | Automatic tests |
 
 ## The docs checker
@@ -28,6 +28,16 @@ There is no machine learning code yet. This page lists what exists today. It gro
 `scripts/check_docs.py` reads every Markdown file and runs a list of small checks on its text. Each check is one function. It takes the text and returns a list of problems. The function `check_file` runs all the checks on one file, and `main` runs it on every file and prints the result.
 
 Tests for it are in `tests/test_check_docs.py`.
+
+## The image toolkit
+
+`src/mantelet/image.py` holds one function for each change a platform makes: resize, centre crop, JPEG compression, blur, and noise. The function `platform_pipeline` runs resize, crop, and JPEG in the fixed order and with the fixed numbers from the [test plan](../research/test-plan.md). The numbers are not options.
+
+The pipeline imitates a social site. It is meant to change the photo in plain sight. It is not a protection. Whether a protection is visible is measured by comparing the original photo with the protected photo before the pipeline runs.
+
+Every function rejects settings that would give a broken image, such as a crop that keeps nothing. `load_image` turns the photo upright using its rotation tag, so a phone photo is not processed sideways.
+
+To see the pipeline on one photo, run `python scripts/demo_pipeline.py photo.png out.png`. Save the result as PNG. A JPEG file adds a second lossy pass.
 
 ## Automatic checks
 

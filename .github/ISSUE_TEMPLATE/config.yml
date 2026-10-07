@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security problem in the code
+    url: https://github.com/Panchak2d/mantelet/security/advisories/new
+    about: Use this private form. Do not open a public issue.
+  - name: Found abusive material involving a child
+    url: https://www.missingkids.org/
+    about: Do not post, share or copy it. Report it to your national hotline or to NCMEC, then tell the maintainer privately. See SAFETY.md.
