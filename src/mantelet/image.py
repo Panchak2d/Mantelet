@@ -13,6 +13,7 @@ shape (height, width, 3), the layout Pillow and the rest of the project use.
 from __future__ import annotations
 
 import io
+import math
 from pathlib import Path
 
 import numpy as np
@@ -20,19 +21,54 @@ from PIL import Image, ImageFilter, ImageOps
 
 Resampling = Image.Resampling
 
+# Only photo formats are opened. Pillow also reads PSD, FITS, PDF and many other
+# formats, and several of its security fixes concern those readers.
+ACCEPTED_FORMATS = ("JPEG", "PNG", "WEBP", "BMP", "GIF", "TIFF")
+
+# Larger radii are meaningless for photos, and Pillow crashes on extreme values.
+MAX_BLUR_RADIUS = 1000.0
+
+_ALPHA_MODES = {"RGBA", "RGBa", "LA", "La", "PA"}
+_HIGH_BIT_DEPTH_MODES = {"I", "F", "I;16", "I;16L", "I;16B", "I;16N"}
+
+
+def _require_rgb(img: Image.Image) -> None:
+    if img.mode != "RGB":
+        raise ValueError(f"expected an RGB image, got mode {img.mode}")
+
+
+def _check_quality(quality: int) -> None:
+    if isinstance(quality, bool) or not isinstance(quality, int) or not 1 <= quality <= 100:
+        raise ValueError(f"quality must be a whole number from 1 to 100, got {quality!r}")
+
+
+def _flatten_to_rgb(img: Image.Image) -> Image.Image:
+    """Convert to RGB. Transparent areas become white, as in a browser."""
+    if img.mode in _HIGH_BIT_DEPTH_MODES:
+        raise ValueError(f"images with mode {img.mode} are not supported, use an 8-bit image")
+    if img.mode in _ALPHA_MODES or "transparency" in img.info:
+        rgba = img.convert("RGBA")
+        white = Image.new("RGBA", rgba.size, (255, 255, 255, 255))
+        return Image.alpha_composite(white, rgba).convert("RGB")
+    return img.convert("RGB")
+
 
 def load_image(path: str | Path) -> Image.Image:
     """Open an image file and return it as RGB, upright.
 
     Phone photos store their rotation as a tag instead of turning the pixels.
     The tag is applied here so every later step sees the photo the way a person does.
+    Transparent areas are filled with white. Only the formats in ``ACCEPTED_FORMATS``
+    are opened, and 16-bit or floating point images are rejected, because
+    converting them would silently clip the pixel values.
     """
-    with Image.open(path) as img:
-        return ImageOps.exif_transpose(img).convert("RGB")
+    with Image.open(path, formats=ACCEPTED_FORMATS) as img:
+        return _flatten_to_rgb(ImageOps.exif_transpose(img))
 
 
 def save_image(img: Image.Image, path: str | Path, quality: int = 90) -> None:
     """Save an image. The file extension picks the format."""
+    _check_quality(quality)
     img.save(path, quality=quality)
 
 
@@ -66,8 +102,8 @@ def centre_crop(img: Image.Image, keep: float = 0.8) -> Image.Image:
 
 def jpeg_compress(img: Image.Image, quality: int = 75) -> Image.Image:
     """Encode to JPEG in memory and decode back. JPEG is lossy, so pixels change."""
-    if not 1 <= quality <= 100:
-        raise ValueError(f"quality must be from 1 to 100, got {quality}")
+    _require_rgb(img)
+    _check_quality(quality)
     buffer = io.BytesIO()
     img.save(buffer, format="JPEG", quality=quality)
     buffer.seek(0)
@@ -77,8 +113,8 @@ def jpeg_compress(img: Image.Image, quality: int = 75) -> Image.Image:
 
 def gaussian_blur(img: Image.Image, radius: float = 1.0) -> Image.Image:
     """Apply a Gaussian blur. A larger radius blurs more."""
-    if radius < 0:
-        raise ValueError(f"radius must not be negative, got {radius}")
+    if not math.isfinite(radius) or not 0 <= radius <= MAX_BLUR_RADIUS:
+        raise ValueError(f"radius must be from 0 to {MAX_BLUR_RADIUS:g}, got {radius}")
     return img.filter(ImageFilter.GaussianBlur(radius=radius))
 
 
@@ -90,8 +126,9 @@ def add_gaussian_noise(
     ``seed`` makes the output reproducible. Experiments pass an integer and log
     it so a run can be repeated.
     """
-    if std < 0:
-        raise ValueError(f"std must not be negative, got {std}")
+    _require_rgb(img)
+    if not math.isfinite(std) or std < 0:
+        raise ValueError(f"std must be a finite number and not negative, got {std}")
     rng = np.random.default_rng(seed)
     array = np.asarray(img, dtype=np.float32)
     noise = rng.normal(0.0, std, array.shape).astype(np.float32)
@@ -106,6 +143,7 @@ def platform_pipeline(img: Image.Image) -> Image.Image:
     long side to 512, centre crop to 80 percent, then JPEG compress at quality
     75. They are the stand-in for what a typical social site does to a photo.
     """
+    _require_rgb(img)
     img = resize_long_side(img, target=512)
     img = centre_crop(img, keep=0.8)
     img = jpeg_compress(img, quality=75)

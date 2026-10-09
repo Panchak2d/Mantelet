@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 
 from mantelet import image
 
@@ -138,3 +138,67 @@ def test_gaussian_blur_rejects_negative_radius():
 def test_add_gaussian_noise_rejects_negative_std():
     with pytest.raises(ValueError):
         image.add_gaussian_noise(make_image(), std=-1.0)
+
+
+@pytest.mark.parametrize("radius", [float("inf"), float("nan"), 1e300, image.MAX_BLUR_RADIUS + 1])
+def test_gaussian_blur_rejects_radius_that_is_not_finite_or_too_large(radius):
+    with pytest.raises(ValueError):
+        image.gaussian_blur(make_image(), radius)
+
+
+@pytest.mark.parametrize("std", [float("inf"), float("nan")])
+def test_add_gaussian_noise_rejects_std_that_is_not_finite(std):
+    with pytest.raises(ValueError):
+        image.add_gaussian_noise(make_image(), std=std)
+
+
+@pytest.mark.parametrize("quality", [1.5, True, "75"])
+def test_jpeg_compress_rejects_quality_that_is_not_a_whole_number(quality):
+    with pytest.raises(ValueError):
+        image.jpeg_compress(make_image(), quality)
+
+
+def test_save_image_rejects_quality_outside_range(tmp_path):
+    with pytest.raises(ValueError):
+        image.save_image(make_image(), tmp_path / "out.jpg", quality=0)
+
+
+@pytest.mark.parametrize(
+    "operation",
+    [image.jpeg_compress, image.add_gaussian_noise, image.platform_pipeline],
+)
+def test_operations_that_need_rgb_reject_other_modes(operation):
+    with pytest.raises(ValueError, match="RGB"):
+        operation(Image.new("RGBA", (16, 16)))
+
+
+def test_load_image_fills_transparent_areas_with_white(tmp_path):
+    file = tmp_path / "clear.png"
+    Image.new("RGBA", (4, 4), (255, 0, 0, 0)).save(file)
+    assert image.load_image(file).getpixel((0, 0)) == (255, 255, 255)
+
+
+def test_load_image_keeps_opaque_pixels_of_an_alpha_image(tmp_path):
+    file = tmp_path / "solid.png"
+    Image.new("RGBA", (4, 4), (10, 20, 30, 255)).save(file)
+    assert image.load_image(file).getpixel((0, 0)) == (10, 20, 30)
+
+
+def test_load_image_fills_transparent_palette_entries_with_white(tmp_path):
+    file = tmp_path / "palette.png"
+    Image.new("P", (4, 4), 0).save(file, transparency=0)
+    assert image.load_image(file).getpixel((0, 0)) == (255, 255, 255)
+
+
+def test_load_image_rejects_16_bit_images_instead_of_clipping(tmp_path):
+    file = tmp_path / "deep.png"
+    Image.fromarray(np.full((4, 4), 30000, dtype=np.uint16)).save(file)
+    with pytest.raises(ValueError, match="8-bit"):
+        image.load_image(file)
+
+
+def test_load_image_refuses_formats_that_are_not_photos(tmp_path):
+    file = tmp_path / "other.ppm"
+    Image.new("RGB", (4, 4)).save(file)
+    with pytest.raises(UnidentifiedImageError):
+        image.load_image(file)

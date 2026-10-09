@@ -11,6 +11,7 @@ A problem is a pair: (line number, message).
 
 import re
 import sys
+from datetime import date, timedelta
 from pathlib import Path
 
 MAX_READING_GRADE = 8.0
@@ -26,7 +27,6 @@ SKIPPED_FOLDERS = {
     "node_modules",
 }
 FILES_THAT_MAY_LIST_BANNED_PHRASES = {
-    "the project plan",
     "docs/development/style-guide.md",
     "research/bibliography.md",
 }
@@ -56,7 +56,13 @@ EMOJI_RANGES = [
 ]
 
 LINK_PATTERN = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)")
-REVIEWED_PATTERN = re.compile(r"^Last reviewed: (\d{1,2} [A-Za-z]+ \d{4})$")
+REVIEWED_PATTERN = re.compile(r"^Last reviewed: (\d{1,2}) ([A-Za-z]+) (\d{4})$")
+MONTHS = [
+    "january", "february", "march", "april", "may", "june",
+    "july", "august", "september", "october", "november", "december",
+]
+# Authors in time zones ahead of the build machine write tomorrow's date.
+FUTURE_DAYS_ALLOWED = 1
 
 
 def find_markdown_files(root):
@@ -146,16 +152,35 @@ def check_links(text, file_path, root):
     return problems
 
 
-def check_header(text):
+def parse_review_date(day, month, year):
+    """Return a date, or None if the words do not name a real day."""
+    if month.lower() not in MONTHS:
+        return None
+    try:
+        return date(int(year), MONTHS.index(month.lower()) + 1, int(day))
+    except ValueError:
+        return None
+
+
+def check_header(text, today=None):
     problems = []
+    if today is None:
+        today = date.today()
     top_lines = text.splitlines()[:12]
     if not any(line.startswith("Reader:") for line in top_lines):
         problems.append((1, "no 'Reader:' line in the first 12 lines"))
 
     reviewed_match = False
     for line in top_lines:
-        if REVIEWED_PATTERN.match(line):
-            reviewed_match = True
+        match = REVIEWED_PATTERN.match(line)
+        if not match:
+            continue
+        reviewed_match = True
+        reviewed = parse_review_date(*match.groups())
+        if reviewed is None:
+            problems.append((1, f"'{line}' is not a real date"))
+        elif reviewed > today + timedelta(days=FUTURE_DAYS_ALLOWED):
+            problems.append((1, f"'{line}' is in the future"))
     if not reviewed_match:
         problems.append((1, "no 'Last reviewed: D Month YYYY' line in the first 12 lines"))
     return problems

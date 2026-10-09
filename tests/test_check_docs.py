@@ -1,4 +1,7 @@
+from datetime import date
+
 import check_docs
+import pytest
 
 LONG_DASH = "\u2014"
 EN_DASH = "\u2013"
@@ -80,7 +83,7 @@ def test_link_starting_with_slash_is_checked_from_repo_root(tmp_path):
 
 
 def test_header_with_reader_and_current_review_passes():
-    assert check_docs.check_header(HEADER) == []
+    assert check_docs.check_header(HEADER, today=date(2026, 10, 5)) == []
 
 
 def test_missing_reader_line_is_reported():
@@ -91,6 +94,21 @@ def test_missing_reader_line_is_reported():
 def test_missing_last_reviewed_line_is_reported():
     problems = check_docs.check_header("Reader: someone.\n")
     assert "no 'Last reviewed" in problems[0][1]
+
+
+@pytest.mark.parametrize(
+    "line", ["Last reviewed: 31 February 2026", "Last reviewed: 4 Octember 2026"]
+)
+def test_impossible_review_date_is_reported(line):
+    problems = check_docs.check_header("Reader: someone.\n" + line + "\n")
+    assert "is not a real date" in problems[0][1]
+
+
+def test_review_date_in_the_future_is_reported_but_tomorrow_is_allowed():
+    text = "Reader: someone.\nLast reviewed: 7 October 2026\n"
+    assert check_docs.check_header(text, today=date(2026, 10, 6)) == []
+    problems = check_docs.check_header(text, today=date(2026, 10, 5))
+    assert "is in the future" in problems[0][1]
 
 
 def test_syllable_counts_for_simple_words():
@@ -139,8 +157,8 @@ def test_repo_with_a_problem_returns_one_and_names_the_file(tmp_path, capsys):
     assert "docs/page.md:4: banned phrase: 'leverage'" in capsys.readouterr().out
 
 
-def test_style_guide_and_plan_may_list_banned_phrases(tmp_path):
-    for name in ("the project plan", "docs/development/style-guide.md"):
+def test_style_guide_and_bibliography_may_list_banned_phrases(tmp_path):
+    for name in ("docs/development/style-guide.md", "research/bibliography.md"):
         page = tmp_path / name
         page.parent.mkdir(parents=True, exist_ok=True)
         page.write_text(HEADER + "\nAvoid leverage.\n", encoding="utf-8")

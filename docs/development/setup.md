@@ -2,13 +2,13 @@
 
 Reader: a beginner who wants to run the project on an EndeavourOS laptop (Arch-based Linux). You need a terminal and basic comfort typing commands.
 
-Last reviewed: 5 October 2026
+Last reviewed: 8 October 2026
 
 This page gets the project running on the CPU. The graphics card is not used. We have not yet tested these steps on EndeavourOS itself. If a step fails, open a [documentation issue](https://github.com/Panchak2d/mantelet/issues/new/choose) and say which step.
 
 ## What you get
 
-A Python 3.13 environment with the two checking tools: `pytest` (runs tests) and `ruff` (checks code style). Nothing else is needed yet.
+A Python 3.13 environment with the two libraries the code uses, Pillow (opens and saves images) and NumPy (works with pixel numbers), and the two checking tools: `pytest` (runs tests) and `ruff` (checks code style).
 
 ## Steps
 
@@ -31,20 +31,14 @@ A Python 3.13 environment with the two checking tools: `pytest` (runs tests) and
    uv python install
    ```
 
-4. Make a virtual environment. This is a private folder of tools for this project only.
+4. Make a virtual environment and install the project with its checking tools. The environment is a private folder of tools for this project only. `uv sync` installs the exact versions listed in `uv.lock`.
 
    ```bash
-   uv venv
+   uv sync --extra dev
    source .venv/bin/activate
    ```
 
-5. Install the project and its checking tools.
-
-   ```bash
-   uv pip install -e ".[dev]"
-   ```
-
-6. Check that everything works. Each command should finish without errors.
+5. Check that everything works. Each command should finish without errors.
 
    ```bash
    pytest
@@ -61,6 +55,8 @@ Every time you open a new terminal, go into the project folder and run `source .
 | Tool | Version | Why |
 |---|---|---|
 | Python | 3.13 in `.python-version`. The code accepts 3.11 and newer | PyTorch 2.14 lists 3.13 as supported. Python 3.13 is still receiving fixes |
+| Pillow | 12.3 or newer in the 12 series | Releases before 12.1.1 have a known memory corruption bug when opening crafted image files, and 12.2.0 and 12.3.0 fix more. Checked 8 October 2026 against the Pillow release notes |
+| NumPy | 2.2 or newer, below 2.6 | Tests pass on 2.4.4 and 2.5.3 |
 | pytest | 9.1.1 or newer in the 9 series | Current when checked |
 | ruff | 0.16.10 or newer in the 0.16 series | Current when checked |
 | uv | whatever `pacman` gives you | Arch lists `uv` in its extra repository |

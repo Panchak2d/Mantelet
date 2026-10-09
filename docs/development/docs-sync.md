@@ -2,7 +2,7 @@
 
 Reader: anyone changing code, settings, or documents in this project.
 
-Last reviewed: 5 October 2026
+Last reviewed: 8 October 2026
 
 Documents must never fall behind the project. When you change something in the left column, check every document in the right column. If one describes something you changed, update it in the same change. If none needs updating, say so in your pull request or patch notes and say why.
 
@@ -23,6 +23,7 @@ Documents must never fall behind the project. When you change something in the l
 | Code area | Check these documents |
 |---|---|
 | `scripts/check_docs.py` (its rules or settings) | `docs/development/style-guide.md`, `CONTRIBUTING.md`, `docs/development/architecture.md` |
+| `uv.lock` | `docs/development/setup.md`, `docs/development/architecture.md` |
 | `.github/workflows/ci.yml` | `CONTRIBUTING.md`, `docs/development/setup.md` |
 | `.github/ISSUE_TEMPLATE/` and `PULL_REQUEST_TEMPLATE.md` | `CONTRIBUTING.md`, `SAFETY.md`, `SECURITY.md` |
 | `pyproject.toml` (name, licence, Python version, dependencies) | `README.md`, `docs/development/setup.md`, `LICENSE-docs.md` if the licence changes |
@@ -32,5 +33,5 @@ Documents must never fall behind the project. When you change something in the l
 ## Each step
 
 1. Check each area the step touched against the tables above.
-3. Update `CHANGELOG.md` only for changes a user would notice. Match the style already in the file.
-5. If a real change has no document, write the small missing piece now or add it to the backlog in `the project plan`.
+2. Update `CHANGELOG.md` only for changes a user would notice. Match the style already in the file.
+3. If a real change has no document, write the small missing piece now or open an issue that names the missing document.
