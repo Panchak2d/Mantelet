@@ -2,7 +2,7 @@
 
 Reader: a parent, a teacher, or anyone new to this project. You do not need to know anything technical.
 
-Last reviewed: 8 October 2026
+Last reviewed: 21 October 2026
 
 ## What this is
 
@@ -25,13 +25,13 @@ We work on two things at the same time:
 1. **Research.** We test whether hidden changes to a photo can make fake images harder to make. We report what we measured and what we could not measure.
 2. **Guides for families and communities.** We write clear steps for what people can do today. These cover how to get images taken down and how to report them. They do not depend on the research working.
 
-The project is also a learning project. The owner is learning Python and machine learning while building it. Everything is open source from the first day.
+Everything is open source from the first day.
 
 ## Where to start
 
 - **You are a parent, teacher, or someone who was hurt:** read [Start here](docs/start-here.md). Then read [For families](docs/for-families.md).
 - **You want to know what this cannot do:** read [Limits](docs/limits.md).
-- **You want to help or learn the code:** read [Contributing](CONTRIBUTING.md) and [Setup](docs/development/setup.md).
+- **You want to help with the code:** read [Contributing](CONTRIBUTING.md) and [Setup](docs/development/setup.md).
 - **You are a researcher:** read [Research](docs/research/README.md) and the [claims ledger](research/claims-ledger.md).
 
 ## Safety rules

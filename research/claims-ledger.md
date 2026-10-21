@@ -2,7 +2,7 @@
 
 Reader: a researcher, reviewer, or reader who wants to check how we know what we say.
 
-Last reviewed: 9 October 2026
+Last reviewed: 21 October 2026
 
 Every public claim in this project is listed here. Each has one label:
 
@@ -10,7 +10,7 @@ Every public claim in this project is listed here. Each has one label:
 - **Reported:** a paper or an official source says so, and we have not repeated it.
 - **Guess:** our own idea, not tested.
 
-No claim is Measured yet. Nothing has been run.
+The only Measured claim is C-031, and it comes from made-up photos and toy protections. No claim about a real protection is Measured.
 
 | ID | Claim | Label | Source or note |
 |---|---|---|---|
@@ -41,3 +41,9 @@ No claim is Measured yet. Nothing has been run.
 | C-025 | The publishers of Face Synthetics and DigiFace-1M state no age range for the faces | Reported | Repository READMEs and paper abstracts read 9 October 2026. We did not read the full papers, and an absent statement is not proof, so the owner reviews a sample before approval |
 | C-026 | A model trained on data under that agreement counts as a Result and may not be used in a commercial offering | Reported | Sections 2.1 and 5.5 of the agreement, read 9 October 2026. This is our reading of a legal text, not legal advice |
 | C-027 | The OpenCV 5 engine handles the fixed-size YuNet file differently from OpenCV 4, so we stay on the 4 series | Reported | OpenCV Zoo YuNet README, read 9 October 2026. We have not run OpenCV 5 |
+| C-028 | The attacks Hönig et al. use against protections are Gaussian noising, DiffPure, noisy upscaling and IMPRESS++. Noisy upscaling adds noise and then runs a diffusion upscaler. They report noisy upscaling as the most effective, with a median success above 40 percent (section 6.1). Their table averages for it run from 39.4 to 45.0 percent across three protection tools | Reported | arXiv 2406.12027, read 21 October 2026. We built none of the diffusion based attacks, because they need a GPU. We did not read the last 1,400 characters of the text |
+| C-029 | Reducing colour bit depth, median smoothing and non-local means are image filters from the feature squeezing paper, where they are used to detect adversarial examples | Reported | Xu, Evans and Qi, NDSS 2018, arXiv 1704.01155, read 21 October 2026. We use them as cleanup attacks, which is not what the paper tests |
+| C-030 | Averaging many images that carry the same watermark estimates the watermark, and subtracting the estimate removes it. It works poorly when each image carries a different watermark | Reported | Doërr and Dugelay, IEEE Transactions on Signal Processing (supplement on secure media), 2004, read 21 October 2026. The paper is about video frames, not photos. Our attack follows the idea and is not their exact method |
+| C-031 | On made-up test photos, cleanup filters remove most of the fine toy grain at acceptable quality. The collusion attack removes a toy pattern shared by every photo and leaves one that differs per photo | Measured | `tests/test_attacks.py` and `tests/test_redteam.py`, repeatable with `scripts/run_redteam.py`. Made-up photos and toy protections only. It says nothing about a real protection |
+| C-032 | A photo that keeps a PSNR of at least 30 dB and an SSIM of at least 0.90 against the original is still useful to an attacker | Guess | The 30 dB value is the low end of the 30 to 50 dB range reported for lossy image compression (Wikipedia, Peak signal-to-noise ratio, read 21 October 2026). The SSIM value has no source. The human study decides |
+| C-033 | When a protection's own change survives an attack, the protection still stops an edit | Not claimed | Survival measures the change in the photo, not what a model does with it. Step 6 measures the effect |

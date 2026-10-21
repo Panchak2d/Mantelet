@@ -4,7 +4,7 @@ Reader: anyone who wants to copy, translate, or reuse the text in this project.
 
 Last reviewed: 5 October 2026
 
-The text of this project is under the Creative Commons Attribution 4.0 International licence (CC BY 4.0). This covers the Markdown documents: the README, the files in `docs/`, `research/`, and `learning/`, and the policy files such as `SAFETY.md`.
+The text of this project is under the Creative Commons Attribution 4.0 International licence (CC BY 4.0). This covers the Markdown documents: the README, the files in `docs/` and `research/`, and the policy files such as `SAFETY.md`.
 
 You may copy, share, translate, and change the text, including for commercial use. You must give credit, link to the licence, and say if you made changes.
 

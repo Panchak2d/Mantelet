@@ -2,9 +2,11 @@
 
 Reader: anyone who meets a technical word in these documents and wants a plain meaning.
 
-Last reviewed: 9 October 2026
+Last reviewed: 21 October 2026
 
 Words are listed in alphabetical order. We add a word the first time a document uses it.
+
+**Admissible result.** An attacked photo that is still close enough to the original to be useful: a PSNR of at least 30 dB and an SSIM of at least 0.90. A result below that does not count as a successful attack.
 
 **Adversarial perturbation.** A tiny change to a photo that people cannot see but that confuses a computer program. The word "perturbation" just means "small change".
 
@@ -13,6 +15,8 @@ Words are listed in alphabetical order. We add a word the first time a document 
 **Baseline.** A measurement made with no protection applied. It shows what ordinary processing does on its own, so a later result can be judged against it.
 
 **Claims ledger.** The public list of every claim the project makes, each with a label that says how we know it. See [research/claims-ledger.md](../research/claims-ledger.md).
+
+**Collusion attack.** An attack that uses many protected photos. If every photo carries the same hidden pattern, averaging the photos cancels the different picture content and keeps the pattern. The attacker then subtracts it. It does not work on a pattern that differs in every photo.
 
 **Content credentials.** A label attached to an image that says where it came from and how it was changed. Anyone can remove the label, for example by taking a screenshot.
 
@@ -38,7 +42,9 @@ Words are listed in alphabetical order. We add a word the first time a document 
 
 **Provenance.** The history of an image: where it came from and what happened to it.
 
-**Red team.** People who attack a defence to find where it breaks. Ours is built before the defence, so we cannot fool ourselves.
+**RMS.** Root mean square. The typical size of a set of changes. A pattern with an RMS of 2 changes a pixel value by about 2 on a scale of 0 to 255.
+
+**Red team.** People, or tools, that attack a defence to find where it breaks. Ours is built before the defence, so we cannot fool ourselves. See the [test plan](research/test-plan.md).
 
 **Robust.** Still working after some kind of change or attack. When we say a method is robust, we say which change or attack.
 
@@ -46,8 +52,12 @@ Words are listed in alphabetical order. We add a word the first time a document 
 
 **Stand-in edit.** A harmless edit used in place of a harmful one, for example changing the colour of a shirt. We never make nude or sexual images, so we measure with stand-ins.
 
+**Survival.** In the red team, the share of a protection's own change that is still in the photo after an attack. 1 means all of it and 0 means none.
+
 **Survival rate.** The share of a protection's effect that is left after normal photo processing, such as shrinking or compressing.
 
 **Synthetic face.** A face made by a computer program that does not belong to a real person.
 
 **Threat model.** A written description of who might attack, what they can do, and what we are trying to stop.
+
+**Toy protection.** A made-up pattern we add to a photo to test the red team. It does nothing against any editing model or face matcher. We know exactly what it did, so we know what the red team should find.

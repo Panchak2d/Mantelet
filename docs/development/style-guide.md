@@ -39,8 +39,6 @@ Last reviewed: Step N, D Month YYYY
 
 The checker flags a page if either line is missing, or if the review is more than 3 steps old.
 
-Practice notes in the `learning/` folder are exempt, because they are your own notes.
-
 ## Checker settings
 
 The reading level limit, the number of steps before a page counts as old, and the current step number are set at the top of `scripts/check_docs.py`. The current step number is changed once per step.

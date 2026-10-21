@@ -2,7 +2,7 @@
 
 Reader: a researcher who wants the list of sources and how far each has been checked.
 
-Last reviewed: 9 October 2026
+Last reviewed: 21 October 2026
 
 Every entry below was checked against the real source. The arXiv ID, authors, title, and year were confirmed. Where the project plan listed something differently, the note column says so. We have not repeated the work in any paper. Until we do, their results are labelled Reported in the [claims ledger](claims-ledger.md).
 
@@ -10,7 +10,7 @@ Every entry below was checked against the real source. The arXiv ID, authors, ti
 
 | Paper | arXiv | Authors | Year | Venue | Notes |
 |---|---|---|---|---|---|
-| Adversarial Perturbations Cannot Reliably Protect Artists From Generative AI | [2406.12027](https://arxiv.org/abs/2406.12027) | Robert Hönig, Javier Rando, Nicholas Carlini, Florian Tramèr | 2024 | arXiv | The plan said ICLR 2025. The arXiv page lists no venue. We label the venue as not confirmed |
+| Adversarial Perturbations Cannot Reliably Protect Artists From Generative AI | [2406.12027](https://arxiv.org/abs/2406.12027) | Robert Hönig, Javier Rando, Nicholas Carlini, Florian Tramèr | 2024 | ICLR 2025 | The ICLR 2025 proceedings page lists the paper (read 22 October 2026). Its attacks are summarised in claim C-028 |
 | Data Poisoning Won't Save You From Facial Recognition | [2106.14851](https://arxiv.org/abs/2106.14851) | Evani Radiya-Dixit, Sanghyun Hong, Nicholas Carlini, Florian Tramèr | 2021 | ICLR 2022 | Confirmed |
 | Raising the Cost of Malicious AI-Powered Image Editing (PhotoGuard) | [2302.06588](https://arxiv.org/abs/2302.06588) | Hadi Salman, Alaa Khaddaj, Guillaume Leclerc, Andrew Ilyas, Aleksander Madry | 2023 | arXiv | Confirmed |
 | LowKey: Leveraging Adversarial Attacks to Protect Social Media Users from Facial Recognition | [2101.07922](https://arxiv.org/abs/2101.07922) | Valeriia Cherepanova, Micah Goldblum, Harrison Foley, Shiyuan Duan, John Dickerson, Gavin Taylor, Tom Goldstein | 2021 | ICLR 2021 | Confirmed |
@@ -33,6 +33,7 @@ The newer protection papers report their own results. Until we repeat their work
 | Obfuscated Gradients Give a False Sense of Security: Circumventing Defenses to Adversarial Examples | [1802.00420](https://arxiv.org/abs/1802.00420) | Anish Athalye, Nicholas Carlini, David Wagner | 2018 |
 | On Evaluating Adversarial Robustness | [1902.06705](https://arxiv.org/abs/1902.06705) | Nicholas Carlini, Anish Athalye, Nicolas Papernot, Wieland Brendel, Jonas Rauber, Dimitris Tsipras, Ian Goodfellow, Aleksander Madry, Alexey Kurakin | 2019 |
 | On Adaptive Attacks to Adversarial Example Defenses | [2002.08347](https://arxiv.org/abs/2002.08347) | Florian Tramer, Nicholas Carlini, Wieland Brendel, Aleksander Madry | 2020 |
+| Feature Squeezing: Detecting Adversarial Examples in Deep Neural Networks | [1704.01155](https://arxiv.org/abs/1704.01155) | Weilin Xu, David Evans, Yanjun Qi | 2017 |
 
 ## Faces and image quality
 
@@ -54,18 +55,6 @@ The newer protection papers report their own results. Until we repeat their work
 | What are diffusion models? | [lilianweng.github.io](https://lilianweng.github.io/posts/2021-07-11-diffusion-models/) | Lilian Weng | 2021 |
 | Hugging Face diffusion course | [huggingface.co/learn](https://huggingface.co/learn) | Hugging Face | n/a |
 
-## Learning resources
-
-| Topic | Where | Checked |
-|---|---|---|
-| Python basics | The official Python tutorial at docs.python.org. CS50's Introduction to Programming with Python (Harvard, free). Automate the Boring Stuff with Python (free online) | later |
-| Git and GitHub | The Pro Git book (free at git-scm.com) | later |
-| Testing | The pytest documentation | later |
-| NumPy basics | The "absolute beginners" guide on numpy.org | later |
-| What a neural network is | 3Blue1Brown's neural network video series on YouTube | later |
-| Hands-on deep learning | Dive into Deep Learning (d2l.ai, free). PyTorch "Learn the Basics" tutorials (pytorch.org/tutorials) | later |
-| Optional full course | fast.ai Practical Deep Learning | later |
-
 ## Other sources
 
 | Source | Used for | Checked |
@@ -79,7 +68,10 @@ The newer protection papers report their own results. Until we repeat their work
 | PyPI project pages for pytest, ruff, hatchling, and torch | The pinned versions | later |
 | The Belmont Report (hhs.gov/ohrp) | The data and ethics policy | later |
 | StopNCII.org | The family page | later |
-| Statistics Done Wrong (statisticsdonewrong.com) | The reading list | later |
-| Khan Academy statistics course | The reading list | later |
-| C2PA specification (c2pa.org) | The provenance track reading list | later |
-| Content Authenticity Initiative (contentauthenticity.org) | The provenance track reading list | later |
+| Statistics Done Wrong (statisticsdonewrong.com) | The [research topics](../docs/research/topics.md) page | later |
+| Khan Academy statistics course | The [research topics](../docs/research/topics.md) page | later |
+| C2PA specification (c2pa.org) | The [research topics](../docs/research/topics.md) page | later |
+| Content Authenticity Initiative (contentauthenticity.org) | The [research topics](../docs/research/topics.md) page | later |
+| Gwenaël Doërr and Jean-Luc Dugelay, Security Pitfalls of Frame-by-Frame Approaches to Video Watermarking, IEEE Transactions on Signal Processing, 2004 (eurecom.edu/publication/1400) | The collusion attack and claim C-030 | 21 October 2026 |
+| Wikipedia, Peak signal-to-noise ratio | The 30 to 50 dB range in claim C-032. A general reference, not a primary source | 21 October 2026 |
+| OpenCV 4.x photo module documentation, `fastNlMeansDenoisingColored` (docs.opencv.org). The Python call was run in our own tests | The non-local means attack. The page text we read was cut off, so the parameters were confirmed by running the call | 21 October 2026 |

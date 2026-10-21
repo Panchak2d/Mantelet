@@ -2,7 +2,7 @@
 
 Reader: every contributor and reviewer. Also anyone who wants to know what this project will never do.
 
-Last reviewed: 5 October 2026
+Last reviewed: 21 October 2026
 
 These rules have no exceptions. Reviewers check every change against them. If a rule blocks something you want to do, change the plan, not the rule.
 
@@ -46,6 +46,7 @@ The red team tools attack our own protections, using methods that are already pu
 
 - The pull request template asks the author to confirm that no images of people or abusive content were added, and that every dataset and model has a recorded licence.
 - Issue forms ask the reporter to confirm that no images of people are attached.
+- The red team script protects photos itself with our own toy protections and reads only approved datasets. It cannot be pointed at a photo that someone else protected.
 - Reviewers check each change against this page before it is merged.
 
 Nothing here can stop someone who ignores the rules. It is a promise we make and check, and not a technical lock.

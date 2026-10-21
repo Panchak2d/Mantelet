@@ -2,7 +2,7 @@
 
 Reader: a beginner who wants to run the project on an EndeavourOS laptop (Arch-based Linux). You need a terminal and basic comfort typing commands.
 
-Last reviewed: 9 October 2026
+Last reviewed: 21 October 2026
 
 This page gets the project running on the CPU. The graphics card is not used. We have not yet tested these steps on EndeavourOS itself. If a step fails, open a [documentation issue](https://github.com/Panchak2d/mantelet/issues/new/choose) and say which step.
 
@@ -48,7 +48,7 @@ A Python 3.13 environment with the three libraries the code uses, Pillow (opens 
 
 The last command should end with "No problems found."
 
-Every time you open a new terminal, go into the project folder and run `source .venv/bin/activate` again.
+Every time you open a new terminal, go into the project folder and run `source .venv/bin/activate` again. If your shell is fish, run `source .venv/bin/activate.fish` instead. You can also skip activation and put `uv run` in front of each command, for example `uv run pytest`.
 
 ## Measure a baseline (optional)
 
@@ -69,6 +69,16 @@ This needs a dataset and the face model files. The baseline shows what ordinary 
    ```
 
 The results, a CSV and a report are written to `outputs/`. To rebuild a report from a results file, run `python scripts/make_report.py outputs/baseline-facesynthetics-seed0/results.json`. If the report says many faces were not found, tell us in a documentation issue before you read anything into the numbers.
+
+## Attack the toy protections (optional)
+
+The red team tries to undo toy protections. A toy adds a hidden pattern and does nothing against any model, so this tests the attack tools and not a protection. It needs a dataset from the register with the status `approved`, as in the baseline above, but no model files.
+
+```bash
+python scripts/run_redteam.py --dataset-id facesynthetics --source data/dataset_100.zip --count 20
+```
+
+Each photo is protected by the script itself. The script never reads a photo that someone else protected. A 512 pixel photo takes about 50 seconds on a laptop CPU for all three toys, so 20 photos take around 17 minutes. The results, a CSV and a report are written to `outputs/redteam-facesynthetics-seed0/`. To rebuild the report from a results file, run `python scripts/make_report.py` on its `results.json`, as for the baseline.
 
 ## Pinned versions
 

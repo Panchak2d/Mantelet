@@ -2,16 +2,17 @@
 
 Reader: a researcher or contributor who wants to know what the research track is trying to do.
 
-Last reviewed: 9 October 2026
+Last reviewed: 21 October 2026
 
 This page is a short summary. The full research design is written in these pages:
 
+- [Research topics](topics.md): what we have looked into, what the sources say, and where each answer is recorded.
 - [Threat model](threat-model.md): who might attack and what we try to stop.
 - [Test plan](test-plan.md): how we measure success and failure, with fixed numbers.
 - [Data and ethics policy](data-and-ethics.md): what data we use and how we follow the safety rules.
 - [Datasets and models](../../research/datasets-and-models.md): the licence of every dataset and model, and what we do not know about them.
 
-No experiment has run yet. The measuring tools are built and tested on stand-in images.
+No experiment on a real protection has run yet. The measuring tools and the red team attack tools are built and tested on made-up images and toy protections.
 
 ## The question
 

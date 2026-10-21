@@ -2,7 +2,7 @@
 
 Reader: a curious learner or researcher who wants to understand the technical idea.
 
-Last reviewed: 9 October 2026
+Last reviewed: 21 October 2026
 
 This page is mostly empty. It will be filled in as the experiments happen. We do not describe how something works until we have built and tested it.
 
@@ -23,11 +23,13 @@ The plan for this is in the [research overview](research/README.md).
 
 ## How we measure
 
-We built the measuring tools before any protection, so we cannot fool ourselves. No result has been produced with them yet.
+We built the measuring tools before any protection, so we cannot fool ourselves. No result on a real protection has been produced with them yet.
 
 - **Pixel change.** Four numbers say how far two photos of the same size differ. The mean squared error is the average of the squared pixel differences. PSNR turns that into a scale in decibels where a higher number means more alike. The largest pixel change is the single biggest jump in any pixel. SSIM compares local patterns of light and detail and gives 1 for identical photos. None of them says what a person notices.
 - **Face match.** A face detector finds the face. A recogniser turns it into a list of numbers. Two faces match when their lists point in nearly the same direction, measured as a cosine similarity of at least 0.363. Both models were trained on photos we cannot vouch for, and the threshold was set on photos of real people. See the [register](../research/datasets-and-models.md).
 - **Baseline.** Before any protection exists, we run photos through shrinking, cropping, compression, blur and noise and measure what is left. A protection must be judged against that, not against a perfect score.
+
+- **Red team.** We built attacks that try to undo a protection before we built any protection. They are basic cleanup filters, the standard attacks from the papers we read, and attacks that use knowledge of how a protection is made. Each attack gets only the protected photo, never the original. We test them on toy protections, which add a hidden pattern that does nothing against any model, so we know the right answer. One toy is easy to remove on purpose. One has a design flaw on purpose: it adds the same pattern to every photo, so averaging many photos exposes it. One is different in every photo and has no such flaw. We then measure how much of the pattern is left, called survival, but only for attacked photos that still look close to the original. The attacks that need a diffusion model are not built yet. A toy result says nothing about a real protection.
 
 The exact settings are in the [test plan](research/test-plan.md).
 

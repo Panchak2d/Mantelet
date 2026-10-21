@@ -91,10 +91,8 @@ def prose_lines(text):
 
 
 def needs_header(relative_path):
-    """Practice notes in learning/ and the GitHub templates do not need a header."""
+    """The GitHub templates do not need a header."""
     if relative_path.startswith(".github/"):
-        return False
-    if relative_path.startswith("learning/") and relative_path != "learning/README.md":
         return False
     return True
 

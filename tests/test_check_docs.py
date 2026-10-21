@@ -136,9 +136,7 @@ def test_reading_grade_ignores_code_blocks_and_headings():
     assert check_docs.reading_grade(plain) == check_docs.reading_grade("We see a cat.\n")
 
 
-def test_learning_notes_do_not_need_a_header():
-    assert not check_docs.needs_header("learning/notes.md")
-    assert check_docs.needs_header("learning/README.md")
+def test_github_templates_do_not_need_a_header():
     assert not check_docs.needs_header(".github/PULL_REQUEST_TEMPLATE.md")
     assert check_docs.needs_header("docs/index.md")
 

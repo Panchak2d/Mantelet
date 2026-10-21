@@ -2,9 +2,9 @@
 
 Reader: a contributor or learner who wants to know what is in each folder.
 
-Last reviewed: 9 October 2026
+Last reviewed: 21 October 2026
 
-There is no protection code yet. The only machine learning models are the two face models used for measuring. This page lists what exists today. It grows as the code grows.
+There is no protection code yet. The only machine learning models are the two face models used for measuring. The only protections are toys, made to test the attack tools. This page lists what exists today. It grows as the code grows.
 
 ## Folders
 
@@ -18,9 +18,8 @@ There is no protection code yet. The only machine learning models are the two fa
 | `.github/` | Automatic checks and the forms for issues and pull requests |
 | `docs/` | The documents for readers and contributors |
 | `research/` | The claims ledger, the bibliography, and the register of datasets and models with their licences |
-| `learning/` | Practice tasks written by the project owner |
-| `scripts/` | Small tools that run from the command line: the docs checker, `demo_pipeline.py`, `fetch_models.py`, `run_baseline.py` and `make_report.py` |
-| `src/mantelet/` | The Python package. `image.py` loads, saves and changes images. `metrics.py`, `faces.py`, `datasets.py`, `baseline.py` and `report.py` measure |
+| `scripts/` | Small tools that run from the command line: the docs checker, `demo_pipeline.py`, `fetch_models.py`, `run_baseline.py`, `run_redteam.py` and `make_report.py` |
+| `src/mantelet/` | The Python package. `image.py` loads, saves and changes images. `metrics.py`, `faces.py`, `datasets.py`, `baseline.py` and `report.py` measure. `toy.py`, `attacks.py` and `redteam.py` are the red team |
 | `data/`, `outputs/` | Created by you, never committed. Datasets and model files go in `data/`. Results go in `outputs/`. Git and the docs checker ignore both |
 | `tests/` | Automatic tests |
 
@@ -55,6 +54,16 @@ These files measure. None of them protects a photo.
 - `report.py` turns a results file into a Markdown report that carries the dataset licence and says what was and was not measured.
 
 `scripts/run_baseline.py` joins these together. `scripts/fetch_models.py` downloads the model files and keeps one only if its size and hash match.
+
+## The red team
+
+These files attack. `toy.py` makes three toy protections. Each adds a hidden pattern and does nothing against any model, so the right answer is known. `attacks.py` holds every attack as an `Attack`: a name, an attacker level, a list of strengths and a function. An attack gets the protected photo and a seed, never the original, and returns a photo of the same size. The collusion attack also gets other protected photos, which is what an attacker who collected several would hold. It refuses with `AttackNotApplicable` when it has too few photos of one size.
+
+`redteam.py` protects each photo, runs every attack at every strength and records the survival of the protection's change and the damage to the photo. An attack result counts only above a fixed quality floor. `summarise` keeps, for each photo, the admissible result with the lowest survival, at each attacker level. It never averages across attacks. The numbers are fixed in the [test plan](../research/test-plan.md). A run holds at most 200 photos in memory and skips photos with a side over 1024 pixels. That keeps the memory use of a full run near 1.5 GB.
+
+`scripts/run_redteam.py` joins these together. It protects the photos itself and reads only datasets with the status `approved`, so it has no way to attack a photo that someone else protected. That is how [SAFETY.md](../../SAFETY.md) rule 7 is kept in the code. `report.py` also writes the red team report, and `make_report.py` picks the right report from the results file.
+
+Adding a real protection later means adding another `Protection` and, if it has a known band or structure, an attack that uses it. The attacks that need a diffusion model are not here yet.
 
 ## Automatic checks
 

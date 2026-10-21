@@ -2,7 +2,7 @@
 
 Reader: a researcher who wants to know exactly how we measure success and failure, and what numbers count as passing.
 
-Last reviewed: 9 October 2026
+Last reviewed: 21 October 2026
 
 This page fixes the pass and fail numbers before any experiment runs. The plan as planned requires this. The numbers below are chosen with written reasons. They will not change after we see results. If we change any of them later, we say so here and explain why.
 
@@ -100,15 +100,48 @@ A condition that changes the size of the photo cannot be scored pixel by pixel a
 
 ## The transformations and attack tools
 
-These are fixed and built in steps 3 and 5.
+These are fixed. The first two rows were built in steps 3 and 4. The third was built in step 5.
 
 | What | Built in | Purpose |
 |---|---|---|
 | JPEG, resize, crop, blur, noise | built (`src/mantelet/image.py`) | The changes platforms apply |
 | Difference scores, face match, baseline runner, report | built (`src/mantelet/metrics.py`, `faces.py`, `baseline.py`, `report.py`) | The measurements above |
-| Red team attack tools | later | The attacks for levels 2 and 3 |
+| Attacks and toy protections | built (`src/mantelet/attacks.py`, `toy.py`, `redteam.py`) | The red team, described below |
 
 The red team attacks use methods that are already public. They attack our own protections. They do not target people. See [SAFETY.md](../../SAFETY.md) rule 7.
+
+## The red team
+
+The red team tries to undo a protection. It was built and tested before any real protection exists. Its first test subject is a set of toy protections that we made up. A toy adds a hidden pattern we know exactly and does nothing against any editing model or face matcher. The toys exist so that we know the right answer: one is weak on purpose, one has a design flaw on purpose, and one has neither. A red team that cannot find the weak toy, or that breaks the sound one, is not ready to judge a real protection. The toy results say nothing about whether a real protection works. They are not a gate result.
+
+**Attacks.** Every attack takes the protected photo and nothing else, so it cannot copy the original back. The set is fixed by attacker level, using the levels in the [threat model](threat-model.md):
+
+| Level | Attacks | Source |
+|---|---|---|
+| 0 | No attack. A control that must show the protection fully present | |
+| 1 | JPEG again, Gaussian blur, shrink and enlarge | Basic cleanup filters |
+| 2 | Median filter, colour bit depth reduction, non-local means denoising, noise then JPEG, noise then denoising, blur then JPEG | Feature squeezing (claim C-029), Gaussian noising (claim C-028) and the chains of steps from claim C-020 |
+| 3 | Removal of a known band of spatial frequencies, and the collusion attack, which averages many protected photos to estimate a pattern they share and subtracts it | The watermark estimation attack (claim C-030) |
+
+Each attack has a list of strengths, such as the blur radius. The attacker tries every strength on every photo.
+
+**Not built yet.** DiffPure and noisy upscaling (claim C-028) need a diffusion model and a GPU. They are built in step 9, when the red team meets the first reproduced protection. Until then the red team is a weaker attacker than the literature describes, and every report says so.
+
+**Survival.** For the toy protections we measure how much of the protection's own change is left. The change is the protected photo minus the original. Survival is how far the attacked photo sits from the original along that change. It is 1 when nothing was removed and 0 when all of it was. The pass number is the one fixed above: at least 50 percent must survive. Survival measures whether the change is still in the photo. It does not measure whether a model is still fooled. A real protection is judged by attacker success rate as well.
+
+**Quality floor.** An attacker needs a photo that still looks good. An attack result counts only when the attacked photo has a PSNR of at least 30 dB and an SSIM of at least 0.90 against the unprotected original. Reason: PSNR values for lossy image compression are reported between 30 and 50 dB (claim C-032), so 30 dB is the low end of ordinary compression damage. The SSIM number has no source. Both are a **Guess** until the human study calibrates them. We fixed them on 21 October 2026, before any protection result exists. A protected photo that is itself below the floor is left out of the survival numbers and counted, because it shows the protection is too visible and not that an attack worked.
+
+**Worst case.** For every photo the attacker keeps the admissible result with the lowest survival. This is generous to the attacker, because a real attacker cannot see the survival. We report it for each attacker level, meaning the best of all attacks up to that level. We do not average across attacks. If one attack works, that is the result.
+
+**Toy protections.** Each adds a pattern whose typical size is 2 pixel values, measured as the root mean square (RMS).
+
+| Toy | What it is | What the red team should find |
+|---|---|---|
+| `toy-white` | Fine random grain, different in every photo | Cleanup filters remove most of it |
+| `toy-band` | A smooth pattern in a band of coarse spatial frequencies, different in every photo | Cleanup filters remove less of it. The collusion attack fails, because a pattern that differs in every photo averages out |
+| `toy-band-shared` | The same smooth pattern in every photo | The collusion attack removes it |
+
+The tests in `tests/test_attacks.py` and `tests/test_redteam.py` check these expectations on made-up photos. A red team result is also a repeat of those expectations on real test photos: run `scripts/run_redteam.py` (see [Setup](../development/setup.md)).
 
 ## The datasets
 
