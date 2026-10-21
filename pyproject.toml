@@ -21,6 +21,7 @@ classifiers = [
 dependencies = [
     "Pillow>=12.3,<13",
     "numpy>=2.2,<2.6",
+    "opencv-python-headless>=4.14.0.94,<5",
 ]
 
 [project.optional-dependencies]

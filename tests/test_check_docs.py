@@ -170,3 +170,11 @@ def test_hidden_and_environment_folders_are_skipped(tmp_path):
     hidden.mkdir(parents=True)
     (hidden / "x.md").write_text("no header here", encoding="utf-8")
     assert check_docs.find_markdown_files(tmp_path) == []
+
+
+def test_generated_data_and_output_folders_are_skipped(tmp_path):
+    for folder in ("data", "outputs"):
+        generated = tmp_path / folder / "run"
+        generated.mkdir(parents=True)
+        (generated / "report.md").write_text("no header here", encoding="utf-8")
+    assert check_docs.find_markdown_files(tmp_path) == []

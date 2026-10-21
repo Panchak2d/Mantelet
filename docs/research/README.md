@@ -2,15 +2,16 @@
 
 Reader: a researcher or contributor who wants to know what the research track is trying to do.
 
-Last reviewed: 5 October 2026
+Last reviewed: 9 October 2026
 
-This page is a short summary. The full research design is written in three new pages:
+This page is a short summary. The full research design is written in these pages:
 
 - [Threat model](threat-model.md): who might attack and what we try to stop.
 - [Test plan](test-plan.md): how we measure success and failure, with fixed numbers.
 - [Data and ethics policy](data-and-ethics.md): what data we use and how we follow the safety rules.
+- [Datasets and models](../../research/datasets-and-models.md): the licence of every dataset and model, and what we do not know about them.
 
-Nothing here has been tested yet.
+No experiment has run yet. The measuring tools are built and tested on stand-in images.
 
 ## The question
 
@@ -38,7 +39,7 @@ Out of scope: video, audio, closed commercial models, and anything that needs us
 
 ## How we decide
 
-We do not use average similarity scores as the main result. We use attacker success rate, noticeable change rate, and survival rate after normal photo processing. later defines each one and fixes the pass and fail numbers before any experiment.
+We do not use average similarity scores as the main result. We use attacker success rate, noticeable change rate, and survival rate after normal photo processing. The [test plan](test-plan.md) defines each one and fixes the pass and fail numbers before any experiment.
 
 ## Decision gates
 

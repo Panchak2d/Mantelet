@@ -2,7 +2,7 @@
 
 Reader: anyone changing code, settings, or documents in this project.
 
-Last reviewed: 8 October 2026
+Last reviewed: 9 October 2026
 
 Documents must never fall behind the project. When you change something in the left column, check every document in the right column. If one describes something you changed, update it in the same change. If none needs updating, say so in your pull request or patch notes and say why.
 
@@ -28,6 +28,10 @@ Documents must never fall behind the project. When you change something in the l
 | `.github/ISSUE_TEMPLATE/` and `PULL_REQUEST_TEMPLATE.md` | `CONTRIBUTING.md`, `SAFETY.md`, `SECURITY.md` |
 | `pyproject.toml` (name, licence, Python version, dependencies) | `README.md`, `docs/development/setup.md`, `LICENSE-docs.md` if the licence changes |
 | `src/mantelet/` | `docs/development/architecture.md`, `docs/how-it-works.md`, `README.md` |
+| `src/mantelet/datasets.py` (the register) | `research/datasets-and-models.md`, `docs/research/data-and-ethics.md` |
+| `src/mantelet/faces.py` (model files, thresholds) | `research/datasets-and-models.md`, `docs/research/test-plan.md`, `research/claims-ledger.md` |
+| `src/mantelet/baseline.py` and `metrics.py` (conditions, scores, counting rules) | `docs/research/test-plan.md`, `docs/how-it-works.md` |
+| `scripts/` (anything a user can run) | `docs/development/setup.md`, `docs/development/architecture.md`, `CHANGELOG.md` |
 | `tests/` | `docs/development/architecture.md` |
 
 ## Each step

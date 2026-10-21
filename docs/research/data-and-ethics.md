@@ -2,7 +2,7 @@
 
 Reader: a researcher or contributor who wants to know what data we use, where it comes from, and the rules we follow.
 
-Last reviewed: 5 October 2026
+Last reviewed: 9 October 2026
 
 This page turns the safety rules in [SAFETY.md](../../SAFETY.md) into concrete rules for research data. The safety rules are hard and have no exceptions. This page explains how we follow them.
 
@@ -11,6 +11,8 @@ This page turns the safety rules in [SAFETY.md](../../SAFETY.md) into concrete r
 We never use images of people under 18. Not in the repo, not in tests, not in datasets, not in issues, not in pull requests. Not even with permission.
 
 Claims about children are reasoned from tests on adults and on synthetic faces. Every document that says something about children says so. This is [SAFETY.md](../../SAFETY.md) rule 2.
+
+A computer-made face is not a person. We still treat a synthetic face that looks like a child as if it were one. A synthetic dataset is used only when the basis for believing its faces look adult is written down. If the publisher says nothing, the owner looks through a sample first and records the result.
 
 ## No real people without consent
 
@@ -27,7 +29,7 @@ We never create or edit images into nude or sexual images of any real or realist
 
 ## Licence first
 
-Every dataset and model has its licence recorded before use. Some face models are research only and cannot be used outside a study. We check each one. The list of datasets and models with their licences is built. This is [SAFETY.md](../../SAFETY.md) rule 4.
+Every dataset and model has its licence recorded before use. Some face models are research only and cannot be used outside a study. We check each one. The list of datasets and models with their licences is the [register](../../research/datasets-and-models.md). The code refuses to run an experiment on a dataset that is not in it and approved. This is [SAFETY.md](../../SAFETY.md) rule 4.
 
 ## Research ethics
 

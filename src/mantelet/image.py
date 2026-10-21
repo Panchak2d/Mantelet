@@ -15,6 +15,7 @@ from __future__ import annotations
 import io
 import math
 from pathlib import Path
+from typing import IO
 
 import numpy as np
 from PIL import Image, ImageFilter, ImageOps
@@ -27,6 +28,15 @@ ACCEPTED_FORMATS = ("JPEG", "PNG", "WEBP", "BMP", "GIF", "TIFF")
 
 # Larger radii are meaningless for photos, and Pillow crashes on extreme values.
 MAX_BLUR_RADIUS = 1000.0
+
+# The fixed platform pipeline. docs/research/test-plan.md explains each number.
+PIPELINE_LONG_SIDE = 512
+PIPELINE_CROP_KEEP = 0.8
+PIPELINE_JPEG_QUALITY = 75
+
+# The milder second profile. It never enlarges a photo and never crops it.
+MILD_PIPELINE_MAX_LONG_SIDE = 1080
+MILD_PIPELINE_JPEG_QUALITY = 85
 
 _ALPHA_MODES = {"RGBA", "RGBa", "LA", "La", "PA"}
 _HIGH_BIT_DEPTH_MODES = {"I", "F", "I;16", "I;16L", "I;16B", "I;16N"}
@@ -53,8 +63,8 @@ def _flatten_to_rgb(img: Image.Image) -> Image.Image:
     return img.convert("RGB")
 
 
-def load_image(path: str | Path) -> Image.Image:
-    """Open an image file and return it as RGB, upright.
+def load_image(source: str | Path | IO[bytes]) -> Image.Image:
+    """Open an image file, or an open binary file object, and return it as RGB, upright.
 
     Phone photos store their rotation as a tag instead of turning the pixels.
     The tag is applied here so every later step sees the photo the way a person does.
@@ -62,7 +72,7 @@ def load_image(path: str | Path) -> Image.Image:
     are opened, and 16-bit or floating point images are rejected, because
     converting them would silently clip the pixel values.
     """
-    with Image.open(path, formats=ACCEPTED_FORMATS) as img:
+    with Image.open(source, formats=ACCEPTED_FORMATS) as img:
         return _flatten_to_rgb(ImageOps.exif_transpose(img))
 
 
@@ -144,7 +154,20 @@ def platform_pipeline(img: Image.Image) -> Image.Image:
     75. They are the stand-in for what a typical social site does to a photo.
     """
     _require_rgb(img)
-    img = resize_long_side(img, target=512)
-    img = centre_crop(img, keep=0.8)
-    img = jpeg_compress(img, quality=75)
+    img = resize_long_side(img, target=PIPELINE_LONG_SIDE)
+    img = centre_crop(img, keep=PIPELINE_CROP_KEEP)
+    img = jpeg_compress(img, quality=PIPELINE_JPEG_QUALITY)
     return img
+
+
+def mild_platform_pipeline(img: Image.Image) -> Image.Image:
+    """Apply the milder second profile: shrink only above 1080 pixels, then JPEG 85.
+
+    Real sites shrink a photo only when it is larger than a size limit and do not
+    crop it, so this profile is closer to what a photo meets after upload than the
+    fixed pipeline. It is reported next to the fixed pipeline and never replaces it.
+    """
+    _require_rgb(img)
+    if max(img.size) > MILD_PIPELINE_MAX_LONG_SIDE:
+        img = resize_long_side(img, target=MILD_PIPELINE_MAX_LONG_SIDE)
+    return jpeg_compress(img, quality=MILD_PIPELINE_JPEG_QUALITY)

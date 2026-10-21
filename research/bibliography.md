@@ -2,7 +2,7 @@
 
 Reader: a researcher who wants the list of sources and how far each has been checked.
 
-Last reviewed: 5 October 2026
+Last reviewed: 9 October 2026
 
 Every entry below was checked against the real source. The arXiv ID, authors, title, and year were confirmed. Where the project plan listed something differently, the note column says so. We have not repeated the work in any paper. Until we do, their results are labelled Reported in the [claims ledger](claims-ledger.md).
 
@@ -40,6 +40,10 @@ The newer protection papers report their own results. Until we repeat their work
 |---|---|---|---|---|
 | FaceNet: A Unified Embedding for Face Recognition and Clustering | [1503.03832](https://arxiv.org/abs/1503.03832) | Florian Schroff, Dmitry Kalenichenko, James Philbin | 2015 | CVPR 2015 |
 | ArcFace: Additive Angular Margin Loss for Deep Face Recognition | [1801.07698](https://arxiv.org/abs/1801.07698) | Jiankang Deng, Jia Guo, Niannan Xue, Stefanos Zafeiriou | 2018 | CVPR 2019. The plan listed this as 2019. The arXiv submission is 2018 |
+| SFace: Sigmoid-Constrained Hypersphere Loss for Robust Face Recognition | [2205.12010](https://arxiv.org/abs/2205.12010) | Yaoyao Zhong, Weihong Deng, Jiani Hu, Dongyue Zhao, Xian Li, Dongchao Wen | 2021 | IEEE TIP 2021 | The face recogniser we use. The paper's repository names the venue. Confirmed |
+| DigiFace-1M: 1 Million Digital Face Images for Face Recognition | [2210.02579](https://arxiv.org/abs/2210.02579) | Gwangbin Bae, Martin de La Gorce, Tadas Baltrusaitis, Charlie Hewitt, Dong Chen, Julien Valentin, Roberto Cipolla, Jingjing Shen | 2022 | WACV 2023 | The dataset repository names the venue. Confirmed |
+| Fake It Till You Make It: Face analysis in the wild using synthetic data alone | [2109.15102](https://arxiv.org/abs/2109.15102) | Erroll Wood, Tadas Baltrusaitis, Charlie Hewitt, Sebastian Dziadzio, Matthew Johnson, Virginia Estellers, Thomas J. Cashman, Jamie Shotton | 2021 | ICCV 2021 | Describes the Face Synthetics dataset. Confirmed |
+| Image Quality Assessment: From Error Visibility to Structural Similarity (SSIM) | [doi 10.1109/TIP.2003.819861](https://doi.org/10.1109/TIP.2003.819861) | Zhou Wang, Alan C. Bovik, Hamid R. Sheikh, Eero P. Simoncelli | 2004 | IEEE TIP 13(4), 600 to 612 | The formula behind `ssim` in `src/mantelet/metrics.py`. Confirmed |
 | The Unreasonable Effectiveness of Deep Features as a Perceptual Metric (LPIPS) | [1801.03924](https://arxiv.org/abs/1801.03924) | Richard Zhang, Phillip Isola, Alexei A. Efros, Eli Shechtman, Oliver Wang | 2018 | CVPR 2018 |
 
 ## Diffusion models
@@ -66,6 +70,8 @@ The newer protection papers report their own results. Until we repeat their work
 
 | Source | Used for | Checked |
 |---|---|---|
+| OpenCV Zoo (github.com/opencv/opencv_zoo): SFace and YuNet pages and code, and the Face Synthetics and DigiFace-1M repositories (github.com/microsoft) | Models, thresholds and dataset licences in the [register](datasets-and-models.md) and claims C-022 to C-027 | 9 October 2026 |
+| The YuNet paper, linked from the Zoo YuNet page (link.springer.com, doi 10.1007/s11633-023-1423-y) | Named as the source of the detector. Title, authors and contents not checked | link only |
 | NCMEC pages on Take It Down and the CyberTipline (missingkids.org) | The family page and claim C-003 | later |
 | PyTorch developer forum posts on Pascal support | Claim C-004 and the setup page | later |
 | Arch Linux package pages for `uv` | The setup page | later |

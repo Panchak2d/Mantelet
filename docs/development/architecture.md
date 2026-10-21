@@ -2,9 +2,9 @@
 
 Reader: a contributor or learner who wants to know what is in each folder.
 
-Last reviewed: 8 October 2026
+Last reviewed: 9 October 2026
 
-There is no machine learning code yet. This page lists what exists today. It grows as the code grows.
+There is no protection code yet. The only machine learning models are the two face models used for measuring. This page lists what exists today. It grows as the code grows.
 
 ## Folders
 
@@ -17,17 +17,18 @@ There is no machine learning code yet. This page lists what exists today. It gro
 | `.python-version` | The exact Python version used for development |
 | `.github/` | Automatic checks and the forms for issues and pull requests |
 | `docs/` | The documents for readers and contributors |
-| `research/` | The claims ledger and the bibliography |
+| `research/` | The claims ledger, the bibliography, and the register of datasets and models with their licences |
 | `learning/` | Practice tasks written by the project owner |
-| `scripts/` | Small tools that run from the command line, such as the docs checker and `demo_pipeline.py` |
-| `src/mantelet/` | The Python package. `image.py` loads and saves images and applies the changes platforms make to a photo |
+| `scripts/` | Small tools that run from the command line: the docs checker, `demo_pipeline.py`, `fetch_models.py`, `run_baseline.py` and `make_report.py` |
+| `src/mantelet/` | The Python package. `image.py` loads, saves and changes images. `metrics.py`, `faces.py`, `datasets.py`, `baseline.py` and `report.py` measure |
+| `data/`, `outputs/` | Created by you, never committed. Datasets and model files go in `data/`. Results go in `outputs/`. Git and the docs checker ignore both |
 | `tests/` | Automatic tests |
 
 ## The docs checker
 
 `scripts/check_docs.py` reads every Markdown file and runs a list of small checks on its text. Each check is one function. It takes the text and returns a list of problems. The function `check_file` runs all the checks on one file, and `main` runs it on every file and prints the result.
 
-It also checks that the "Last reviewed" date is a real date and is not in the future. Tests for it are in `tests/test_check_docs.py`.
+It also checks that the "Last reviewed" date is a real date and is not in the future. It skips the `data/` and `outputs/` folders, where generated reports go. Tests for it are in `tests/test_check_docs.py`.
 
 ## The image toolkit
 
@@ -39,8 +40,22 @@ Every function rejects settings that would give a broken image, such as a crop t
 
 `load_image` turns the photo upright using its rotation tag, so a phone photo is not processed sideways. It fills transparent areas with white and refuses 16-bit images, which cannot be converted without clipping. It opens only photo formats (JPEG, PNG, WebP, BMP, GIF and TIFF). The Pillow library can read many other formats, and several of its security fixes concern those readers.
 
-To see the pipeline on one photo, run `python scripts/demo_pipeline.py photo.png out.png`. Save the result as PNG. A JPEG file adds a second lossy pass. The script stops instead of overwriting a file unless you add `--force`, and it never writes over its input.
+`mild_platform_pipeline` is the milder second profile: it shrinks only above 1080 pixels, compresses at JPEG 85 and does not crop. The numbers of both pipelines are named constants at the top of `image.py`.
+
+To see the pipeline on one photo, run `python scripts/demo_pipeline.py photo.png out.png`. Add `--mild` for the milder profile. Save the result as PNG. A JPEG file adds a second lossy pass. The script stops instead of overwriting a file unless you add `--force`, and it never writes over its input.
+
+## The measuring tools
+
+These files measure. None of them protects a photo.
+
+- `metrics.py` gives four difference scores for two images of the same size: mean squared error, PSNR, the largest pixel change and SSIM. Each is written from its formula in NumPy. The tests compare SSIM with a slow loop version of the same formula.
+- `faces.py` finds a face and turns it into a list of numbers using OpenCV. The model files are pinned to one commit and one SHA-256 hash. The code reads each file into memory, checks it, and only then gives it to OpenCV. The functions that compare faces are plain NumPy, so tests can use a stand-in model. Photos are always opened by `image.load_image`, never by OpenCV.
+- `datasets.py` holds the register of datasets and `ImageSource`, which reads photos from a folder or a zip file. A zip file is never unpacked, each photo has a size limit, and a dataset is refused unless its status is `approved`.
+- `baseline.py` runs every photo through a fixed list of conditions and records the scores and face matches. It keeps no pixels. `summarise` turns the records into per-condition numbers, with the worst case beside the mean.
+- `report.py` turns a results file into a Markdown report that carries the dataset licence and says what was and was not measured.
+
+`scripts/run_baseline.py` joins these together. `scripts/fetch_models.py` downloads the model files and keeps one only if its size and hash match.
 
 ## Automatic checks
 
-On every push and pull request, GitHub runs `.github/workflows/ci.yml`. It installs the project on Python 3.11 and 3.13, then checks that `uv.lock` matches `pyproject.toml`, and runs `ruff check .`, `pytest`, and the docs checker.
+On every push and pull request, GitHub runs `.github/workflows/ci.yml`. It installs the project on Python 3.11 and 3.13, then checks that `uv.lock` matches `pyproject.toml`, and runs `ruff check .`, `pytest`, and the docs checker. The tests that need the real face model files skip themselves when the files are not there, so they run only on a machine where `fetch_models.py` has been run.

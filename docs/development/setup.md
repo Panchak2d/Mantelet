@@ -2,13 +2,13 @@
 
 Reader: a beginner who wants to run the project on an EndeavourOS laptop (Arch-based Linux). You need a terminal and basic comfort typing commands.
 
-Last reviewed: 8 October 2026
+Last reviewed: 9 October 2026
 
 This page gets the project running on the CPU. The graphics card is not used. We have not yet tested these steps on EndeavourOS itself. If a step fails, open a [documentation issue](https://github.com/Panchak2d/mantelet/issues/new/choose) and say which step.
 
 ## What you get
 
-A Python 3.13 environment with the two libraries the code uses, Pillow (opens and saves images) and NumPy (works with pixel numbers), and the two checking tools: `pytest` (runs tests) and `ruff` (checks code style).
+A Python 3.13 environment with the three libraries the code uses, Pillow (opens and saves images), NumPy (works with pixel numbers) and OpenCV (runs the face models), and the two checking tools: `pytest` (runs tests) and `ruff` (checks code style).
 
 ## Steps
 
@@ -50,6 +50,26 @@ The last command should end with "No problems found."
 
 Every time you open a new terminal, go into the project folder and run `source .venv/bin/activate` again.
 
+## Measure a baseline (optional)
+
+This needs a dataset and the face model files. The baseline shows what ordinary photo processing does to a photo and to a face match. It does not protect anything.
+
+1. Read [datasets and models](../../research/datasets-and-models.md). The datasets are non-commercial research data. Download the 100 image sample of Face Synthetics from its [repository page](https://github.com/microsoft/FaceSynthetics) into a `data/` folder. Git ignores that folder.
+2. Look through the sample yourself. If every face looks like an adult, change the status of `facesynthetics` to `approved` in `src/mantelet/datasets.py` and in the register page.
+3. Download the two face model files. The script checks their hashes and keeps them only if they match.
+
+   ```bash
+   python scripts/fetch_models.py
+   ```
+
+4. Run the baseline. The zip is read in place and is not unpacked.
+
+   ```bash
+   python scripts/run_baseline.py --dataset-id facesynthetics --source data/dataset_100.zip
+   ```
+
+The results, a CSV and a report are written to `outputs/`. To rebuild a report from a results file, run `python scripts/make_report.py outputs/baseline-facesynthetics-seed0/results.json`. If the report says many faces were not found, tell us in a documentation issue before you read anything into the numbers.
+
 ## Pinned versions
 
 | Tool | Version | Why |
@@ -57,6 +77,7 @@ Every time you open a new terminal, go into the project folder and run `source .
 | Python | 3.13 in `.python-version`. The code accepts 3.11 and newer | PyTorch 2.14 lists 3.13 as supported. Python 3.13 is still receiving fixes |
 | Pillow | 12.3 or newer in the 12 series | Releases before 12.1.1 have a known memory corruption bug when opening crafted image files, and 12.2.0 and 12.3.0 fix more. Checked 8 October 2026 against the Pillow release notes |
 | NumPy | 2.2 or newer, below 2.6 | Tests pass on 2.4.4 and 2.5.3 |
+| OpenCV (`opencv-python-headless`) | 4.14.0.94 or newer in the 4 series | Runs the face detector and recogniser. Version 5.0.0.93 exists. The OpenCV Zoo says the version 5 engine handles the fixed-size detector file differently, and we have not tested it. Checked 9 October 2026 on PyPI |
 | pytest | 9.1.1 or newer in the 9 series | Current when checked |
 | ruff | 0.16.10 or newer in the 0.16 series | Current when checked |
 | uv | whatever `pacman` gives you | Arch lists `uv` in its extra repository |

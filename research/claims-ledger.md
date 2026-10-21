@@ -2,7 +2,7 @@
 
 Reader: a researcher, reviewer, or reader who wants to check how we know what we say.
 
-Last reviewed: 8 October 2026
+Last reviewed: 9 October 2026
 
 Every public claim in this project is listed here. Each has one label:
 
@@ -35,3 +35,9 @@ No claim is Measured yet. Nothing has been run.
 | C-019 | Social sites crop uploaded photos by 20 percent from the centre | Not claimed | No source found. Instagram only limits the shape of the photo. The 80 percent crop is our own choice |
 | C-020 | Protective perturbations often fail under ordinary transformations such as JPEG and blur, and optimising against random transformations (EOT) helps little at medium strength. Several transformations in a row can fail where one alone does not | Reported | Zhao et al., CVPR 2024, arXiv 2312.00084. arXiv 2604.23688. arXiv 2512.07228 reports that uniform sampling of transformations is suboptimal. We found no paper that tests crop position on its own. Read 8 October 2026 |
 | C-021 | Where a crop starts, compared with the 8 pixel grid used by JPEG and by image models, changes whether a protection survives | Guess | Our reasoning. The fixed pipeline always starts its crop 3 pixels off the 8 pixel grid on the long side, so it tests one case only. A related result for patch-based vision models is in arXiv 2510.13643. Test before Gate 1 |
+| C-022 | A cosine similarity of at least 0.363 is a sound same-person rule for synthetic faces | Guess | The number is the SFace threshold in the OpenCV Zoo code (`sface.py`, read 9 October 2026). It was set on photos of real people. The first baseline reports false matches between different photos as a check |
+| C-023 | Strong open face recognition models, including SFace, are trained on web-collected photos of real people. The OpenCV Zoo does not say which set trained its SFace file | Reported | SFace paper abstract (arXiv 2205.12010) names CASIA-WebFace, VGGFace2 and MS-Celeb-1M. Zoo README read 9 October 2026. We did not check YuNet's training data or the WIDER Face terms |
+| C-024 | Face Synthetics and DigiFace-1M are licensed for non-commercial research only, under the Research Use of Data Agreement v1.0 | Reported | `LICENSE.txt` and `LICENSE` in the two Microsoft repositories, read 9 October 2026 |
+| C-025 | The publishers of Face Synthetics and DigiFace-1M state no age range for the faces | Reported | Repository READMEs and paper abstracts read 9 October 2026. We did not read the full papers, and an absent statement is not proof, so the owner reviews a sample before approval |
+| C-026 | A model trained on data under that agreement counts as a Result and may not be used in a commercial offering | Reported | Sections 2.1 and 5.5 of the agreement, read 9 October 2026. This is our reading of a legal text, not legal advice |
+| C-027 | The OpenCV 5 engine handles the fixed-size YuNet file differently from OpenCV 4, so we stay on the 4 series | Reported | OpenCV Zoo YuNet README, read 9 October 2026. We have not run OpenCV 5 |

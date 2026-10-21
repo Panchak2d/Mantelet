@@ -2,13 +2,15 @@
 
 Reader: anyone who meets a technical word in these documents and wants a plain meaning.
 
-Last reviewed: 5 October 2026
+Last reviewed: 9 October 2026
 
 Words are listed in alphabetical order. We add a word the first time a document uses it.
 
 **Adversarial perturbation.** A tiny change to a photo that people cannot see but that confuses a computer program. The word "perturbation" just means "small change".
 
 **Attacker success rate.** How often an attack still works. For example, how often a face match still succeeds after we protect a photo. A lower number is better for the defender.
+
+**Baseline.** A measurement made with no protection applied. It shows what ordinary processing does on its own, so a later result can be judged against it.
 
 **Claims ledger.** The public list of every claim the project makes, each with a label that says how we know it. See [research/claims-ledger.md](../research/claims-ledger.md).
 
@@ -18,6 +20,10 @@ Words are listed in alphabetical order. We add a word the first time a document 
 
 **Diffusion model.** A kind of AI program that makes or edits images by starting from noise and cleaning it up step by step.
 
+**Embedding.** A list of numbers that a program makes from a face. Two photos of the same person should give lists that point in nearly the same direction.
+
+**False match.** The recogniser says two photos show the same person when they do not.
+
 **Fine-tuning.** Teaching an existing AI model more about one thing, for example the face of one person, by training it on a few extra photos.
 
 **GPU.** A computer chip that is fast at the kind of maths AI needs. Many AI models need a strong one. Our laptop has a small one.
@@ -26,6 +32,8 @@ Words are listed in alphabetical order. We add a word the first time a document 
 
 **Inpainting.** Filling in or replacing part of a photo with new content made by a program.
 
+**PSNR.** Peak signal to noise ratio. A score in decibels for how close two photos are. A higher number means more alike. Identical photos have no finite value.
+
 **Perceptual budget.** How much a photo is allowed to change before a person can notice. It is a limit we set.
 
 **Provenance.** The history of an image: where it came from and what happened to it.
@@ -33,6 +41,8 @@ Words are listed in alphabetical order. We add a word the first time a document 
 **Red team.** People who attack a defence to find where it breaks. Ours is built before the defence, so we cannot fool ourselves.
 
 **Robust.** Still working after some kind of change or attack. When we say a method is robust, we say which change or attack.
+
+**SSIM.** Structural similarity. A score from 0 to 1 that compares local patterns of light and detail in two photos. 1 means identical.
 
 **Stand-in edit.** A harmless edit used in place of a harmful one, for example changing the colour of a shirt. We never make nude or sexual images, so we measure with stand-ins.
 

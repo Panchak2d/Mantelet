@@ -48,3 +48,10 @@ def test_demo_reports_a_missing_input_and_a_missing_output_folder(tmp_path, caps
     photo = make_photo(tmp_path / "in.png")
     assert run(photo, tmp_path / "no_such_folder" / "out.png") == 1
     assert capsys.readouterr().err.count("Error:") == 2
+
+
+def test_demo_mild_keeps_the_size_of_a_small_photo(tmp_path):
+    photo = make_photo(tmp_path / "in.png", (200, 100))
+    out = tmp_path / "out.png"
+    assert run(photo, out, "--mild") == 0
+    assert Image.open(out).size == (200, 100)

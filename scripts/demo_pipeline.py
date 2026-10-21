@@ -2,11 +2,14 @@
 
     python scripts/demo_pipeline.py photo.png out.png
     python scripts/demo_pipeline.py photo.png out.png --noise --seed 1
+    python scripts/demo_pipeline.py photo.png out.png --mild
 
 The pipeline imitates what a social site does to a photo: shrink it, crop it,
 compress it. The output is meant to look different from the input. This is not
 a protection and does not hide anything. With --noise, random noise is added
-first and the pipeline runs second, the order used in the experiments.
+first and the pipeline runs second, the order used in the experiments. With --mild,
+the milder profile runs instead: it shrinks only above 1080 pixels, compresses at
+JPEG 85 and does not crop.
 
 The script never overwrites a file unless you pass --force, and never writes
 over its own input.
@@ -30,6 +33,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("output", type=Path, help="Where to save the result (.png is exact)")
     parser.add_argument("--noise", action="store_true", help="Add random noise first")
     parser.add_argument("--seed", type=int, default=None, help="Makes --noise repeatable")
+    parser.add_argument("--mild", action="store_true", help="Use the milder profile")
     parser.add_argument("--force", action="store_true", help="Overwrite an existing output file")
     args = parser.parse_args(argv)
 
@@ -52,8 +56,12 @@ def main(argv: list[str] | None = None) -> int:
         img = image.add_gaussian_noise(img, std=NOISE_STD, seed=args.seed)
         print(f"Added Gaussian noise, std {NOISE_STD}, seed {args.seed}")
 
-    processed = image.platform_pipeline(img)
-    print(f"After pipeline (resize to 512, crop to 80 percent, JPEG 75): {processed.size}")
+    if args.mild:
+        processed = image.mild_platform_pipeline(img)
+        print(f"After milder pipeline (shrink above 1080, JPEG 85, no crop): {processed.size}")
+    else:
+        processed = image.platform_pipeline(img)
+        print(f"After pipeline (resize to 512, crop to 80 percent, JPEG 75): {processed.size}")
 
     if args.output.suffix.lower() in LOSSY_SUFFIXES:
         print("Note: saving as JPEG adds a second lossy pass. Use .png to keep the output exact.")

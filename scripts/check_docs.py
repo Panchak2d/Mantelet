@@ -25,6 +25,8 @@ SKIPPED_FOLDERS = {
     ".claude",
     ".agents",
     "node_modules",
+    "data",
+    "outputs",
 }
 FILES_THAT_MAY_LIST_BANNED_PHRASES = {
     "docs/development/style-guide.md",

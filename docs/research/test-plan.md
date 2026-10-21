@@ -2,7 +2,7 @@
 
 Reader: a researcher who wants to know exactly how we measure success and failure, and what numbers count as passing.
 
-Last reviewed: 8 October 2026
+Last reviewed: 9 October 2026
 
 This page fixes the pass and fail numbers before any experiment runs. The plan as planned requires this. The numbers below are chosen with written reasons. They will not change after we see results. If we change any of them later, we say so here and explain why.
 
@@ -54,6 +54,50 @@ This pipeline is therefore a harsh stress test, not a copy of a platform. A prot
 
 The crop keeps the face only when the face sits near the middle of the photo. A full-body photo has its face near the top, and the centre crop cuts the head off. Test images must be framed around the face, such as the aligned faces in common face datasets. The numbers above are unchanged.
 
+## The milder second profile
+
+The fixed pipeline is harsh on purpose. A second, milder profile shows what a photo meets on a site that only shrinks large photos and does not crop.
+
+| Step | Setting |
+|---|---|
+| Resize | Only if the long side is above 1080 pixels, shrink it to 1080. Never enlarge |
+| Crop | None |
+| JPEG | Quality 85 |
+
+Reason: the studies in claims C-016 and C-017 report Instagram shrinking only above 1080 pixels and Facebook quality factors up to 92. No study we found reports a crop (C-019).
+
+The milder profile is measured and reported next to the fixed pipeline. It does not replace it. The pass numbers above still apply to the fixed pipeline, and a result on the milder profile is never used to rescue a failure on the fixed one. We added this profile on 9 October 2026, before any protection result exists.
+
+## The measuring tools
+
+These are built and are fixed before any protection result.
+
+**Difference scores.** For two images of the same size we calculate four scores: mean squared error (MSE), peak signal to noise ratio (PSNR), the largest change to any pixel, and structural similarity (SSIM). They measure pixel change, not what a person notices. The human study decides visibility. The scores are calculated from their published formulas in `src/mantelet/metrics.py`. SSIM was checked against the scikit-image implementation and agreed to 12 decimal places on three test pairs. That check was run once by hand and is not part of the test suite.
+
+**Face match.** The face detector is YuNet with a detection score threshold of 0.6. The recogniser is SFace. Two faces match when the cosine similarity of their face vectors is at least 0.363. Both numbers come from the OpenCV Zoo code (claim C-022). The rules for counting are:
+
+- A photo whose original face is not found is left out of the face numbers and counted on its own.
+- A face not found after processing counts as no match.
+- The match rate is matches divided by the photos whose original face was found, with a 95 percent Wilson interval.
+
+**False match check.** We also compare every pair of different photos. Any match there is a false match. It shows whether the threshold is too loose for the dataset. It assumes different photos show different people, so it can only overstate the false matches.
+
+**Baseline conditions.** Each photo goes through the conditions below with no protection. The result is what ordinary processing does on its own. A protection result must be judged against it. The noise seeds are derived from the run seed, the photo and the condition, so a run can be repeated.
+
+| Condition | What is done |
+|---|---|
+| identity | Nothing. A face must match itself |
+| jpeg-75 | JPEG at quality 75 |
+| blur-1 | Gaussian blur, radius 1 |
+| noise-5, noise-15 | Gaussian noise with standard deviation 5 and 15 |
+| platform-pipeline | The fixed pipeline |
+| mild-pipeline | The milder profile |
+| noise-15-then-pipeline | Noise 15, then the fixed pipeline |
+
+A condition that changes the size of the photo cannot be scored pixel by pixel against the original. For a protection, the size-matched comparison is the protected photo against the unprotected photo after the same pipeline.
+
+**Where the first baseline stands.** The tools and a test run on stand-in images exist. The baseline on synthetic faces needs the dataset review in the [register](../../research/datasets-and-models.md) and the model download, so it has not run yet. No baseline number is in the repository.
+
 ## The transformations and attack tools
 
 These are fixed and built in steps 3 and 5.
@@ -61,13 +105,14 @@ These are fixed and built in steps 3 and 5.
 | What | Built in | Purpose |
 |---|---|---|
 | JPEG, resize, crop, blur, noise | built (`src/mantelet/image.py`) | The changes platforms apply |
+| Difference scores, face match, baseline runner, report | built (`src/mantelet/metrics.py`, `faces.py`, `baseline.py`, `report.py`) | The measurements above |
 | Red team attack tools | later | The attacks for levels 2 and 3 |
 
 The red team attacks use methods that are already public. They attack our own protections. They do not target people. See [SAFETY.md](../../SAFETY.md) rule 7.
 
 ## The datasets
 
-These datasets are chosen carefully. Each dataset is listed with its licence before use. The [data and ethics policy](data-and-ethics.md) sets the rules. Synthetic faces and consenting adults only. No images of people under 18.
+Each dataset is listed with its licence before use in the [register](../../research/datasets-and-models.md). The [data and ethics policy](data-and-ethics.md) sets the rules. Synthetic faces and consenting adults only. No images of people under 18. The first baseline uses the Face Synthetics sample once the owner has approved it.
 
 ## Attacker levels per experiment
 

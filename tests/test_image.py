@@ -1,3 +1,5 @@
+import io
+
 import numpy as np
 import pytest
 from PIL import Image, UnidentifiedImageError
@@ -202,3 +204,18 @@ def test_load_image_refuses_formats_that_are_not_photos(tmp_path):
     Image.new("RGB", (4, 4)).save(file)
     with pytest.raises(UnidentifiedImageError):
         image.load_image(file)
+
+
+def test_mild_pipeline_keeps_small_photos_the_same_size():
+    assert image.mild_platform_pipeline(make_image((600, 400))).size == (600, 400)
+
+
+def test_mild_pipeline_shrinks_only_above_the_limit():
+    assert image.mild_platform_pipeline(make_image((2160, 1080))).size == (1080, 540)
+
+
+def test_load_image_reads_an_open_file_object():
+    buffer = io.BytesIO()
+    make_image((30, 20)).save(buffer, format="PNG")
+    buffer.seek(0)
+    assert image.load_image(buffer).size == (30, 20)
