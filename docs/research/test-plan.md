@@ -2,7 +2,7 @@
 
 Reader: a researcher who wants to know exactly how we measure success and failure, and what numbers count as passing.
 
-Last reviewed: 21 October 2026
+Last reviewed: 22 October 2026
 
 This page fixes the pass and fail numbers before any experiment runs. The plan as planned requires this. The numbers below are chosen with written reasons. They will not change after we see results. If we change any of them later, we say so here and explain why.
 
@@ -53,6 +53,16 @@ These numbers are fixed. They are a stand-in for what real platforms do, not an 
 This pipeline is therefore a harsh stress test, not a copy of a platform. A protection that survives it is a stronger result. A protection that fails it has not yet been shown to fail on a real site.
 
 The crop keeps the face only when the face sits near the middle of the photo. A full-body photo has its face near the top, and the centre crop cuts the head off. Test images must be framed around the face, such as the aligned faces in common face datasets. The numbers above are unchanged.
+
+## Crop positions
+
+The fixed pipeline always crops from the centre. On a 512 pixel long side that starts the crop 51 pixels in, which is 3 pixels off the 8 pixel grid that JPEG works on (claim C-021). One position tests one case. So the code can also start the crop at a seeded random corner (`random_crop_offset`, `platform_pipeline_random_crop` in `src/mantelet/image.py`) and `src/mantelet/cropsweep.py` measures survival through the fixed pipeline at three kinds of corner: the centre, 16 seeded random corners, and up to 36 corners that lie on the 8 pixel grid (six left values times six top values, spread evenly and including the first and last).
+
+The numbers do not change: long side 512, crop 80 percent, JPEG 75. Only the place where the crop starts is free.
+
+Survival through the pipeline is measured like this. The ideal change is the protection's change (protected photo minus original) shrunk and cropped without JPEG, kept as decimal numbers. The actual change is the protected photo minus the original photo, both run through the pipeline at the same corner. Survival is how far the actual change lies along the ideal one. 1 means the pipeline removed nothing and 0 means it removed all of it. For each photo the report gives the centre, the mean over random corners, the mean over grid corners and the worst corner.
+
+The pass number of 50 percent is judged at the centre crop, as fixed above. The other corners are reported beside it and are never used to rescue a failure at the centre. If the centre passes and some corners fail, the report shows the gap and we say so. We do not move the number. This is the same rule as for the milder profile. We added the crop positions on 22 October 2026, before any protection result exists.
 
 ## The milder second profile
 
@@ -124,6 +134,15 @@ The red team tries to undo a protection. It was built and tested before any real
 | 3 | Removal of a known band of spatial frequencies, and the collusion attack, which averages many protected photos to estimate a pattern they share and subtracts it | The watermark estimation attack (claim C-030) |
 
 Each attack has a list of strengths, such as the blur radius. The attacker tries every strength on every photo.
+
+**The known band attack uses the protection's own band.** A protection declares the band of spatial frequencies it writes its change into, or none (`Protection.band`). The level 3 known band attack is built from that band and is left out for a protection that declares none, because there is no band to remove. `toy-band` and `toy-band-shared` declare the band they use. `toy-white` declares none, since fine random grain has no band. A real protection must declare its own band or structure before it meets level 3, and a protection with a structure that is not a band needs its own attack. The quality floor and the survival number are unchanged.
+
+**Face match and edit success.** Survival alone does not show whether a model is fooled (claim C-033). The red team records therefore carry two more columns for every attack result that stays above the quality floor.
+
+- `face_match`: the face model finds a face in the attacked photo and the cosine similarity to the face in the unprotected original is at least 0.363. A face not found counts as no match, and a photo whose original face is not found is left out of the face numbers and counted. These are the baseline counting rules. The column stays empty when no face model is given.
+- `edit_success`: a stand-in edit, run on the attacked photo, worked. It needs an editing model, which is built in step 9, so the column is empty in every run until then and the report says it was not measured.
+
+The attacker wins on a photo when any admissible result, up to the attacker level, still has a face match (or a working edit). This is the worst case rule again. The attacker success rate is the share of photos with a face found in the original where the attacker wins, with a 95 percent Wilson interval. It includes the unattacked protected photo, so level 0 shows what the protection does on its own. The unprotected baseline for the 50 point drop is the baseline match rate in the same conditions.
 
 **Not built yet.** DiffPure and noisy upscaling (claim C-028) need a diffusion model and a GPU. They are built in step 9, when the red team meets the first reproduced protection. Until then the red team is a weaker attacker than the literature describes, and every report says so.
 

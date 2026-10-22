@@ -2,7 +2,7 @@
 
 Reader: anyone who opened the docs folder and wants to know which page to read.
 
-Last reviewed: 21 October 2026
+Last reviewed: 22 October 2026
 
 Mantelet is a research project. It does not protect anyone yet. Read [Limits](limits.md) before anything else if you are thinking of relying on it.
 
@@ -27,4 +27,5 @@ Mantelet is a research project. It does not protect anyone yet. Read [Limits](li
 3. [Claims ledger](../research/claims-ledger.md): every public claim, with a label.
 4. [Bibliography](../research/bibliography.md): sources.
 5. [Datasets and models](../research/datasets-and-models.md): the licence of every dataset and model we use.
-6. [How it works](how-it-works.md): the technical idea and how we measure it. The results part is empty until later steps.
+6. [Compute options](../research/compute-options.md): where the GPU steps can run, and what each service allows.
+7. [How it works](how-it-works.md): the technical idea and how we measure it. The results part is empty until later steps.

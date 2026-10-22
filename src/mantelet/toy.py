@@ -32,11 +32,17 @@ SHARED_KEY = 20261021
 
 @dataclass(frozen=True)
 class Protection:
-    """One protection. ``apply`` gets the photo and a seed that is different for every photo."""
+    """One protection. ``apply`` gets the photo and a seed that is different for every photo.
+
+    ``band`` is the pair of Gaussian sigmas that bound the spatial frequencies the
+    protection writes its change into, or None when it has no such band. The level 3
+    known band attack uses the band the protection itself declares.
+    """
 
     name: str
     description: str
     apply: Callable[[Image.Image, int], Image.Image]
+    band: tuple[float, float] | None = None
 
 
 def _add(img: Image.Image, pattern: np.ndarray) -> Image.Image:
@@ -83,10 +89,12 @@ TOY_PROTECTIONS = (
         "toy-band",
         "Smooth pattern in one band of spatial frequencies, different in every photo",
         lambda img, seed: _add(img, band_pattern(_shape(img), seed)),
+        band=(BAND_NARROW_SIGMA, BAND_WIDE_SIGMA),
     ),
     Protection(
         "toy-band-shared",
         "The same smooth pattern in every photo",
         lambda img, _seed: _add(img, band_pattern(_shape(img), SHARED_KEY)),
+        band=(BAND_NARROW_SIGMA, BAND_WIDE_SIGMA),
     ),
 )

@@ -2,7 +2,7 @@
 
 Reader: anyone who meets a technical word in these documents and wants a plain meaning.
 
-Last reviewed: 21 October 2026
+Last reviewed: 22 October 2026
 
 Words are listed in alphabetical order. We add a word the first time a document uses it.
 
@@ -18,7 +18,11 @@ Words are listed in alphabetical order. We add a word the first time a document 
 
 **Collusion attack.** An attack that uses many protected photos. If every photo carries the same hidden pattern, averaging the photos cancels the different picture content and keeps the pattern. The attacker then subtracts it. It does not work on a pattern that differs in every photo.
 
+**Compute capability.** A version number such as 6.1 that says which generation an NVIDIA graphics card is. A PyTorch build only runs on the cards it has code for.
+
 **Content credentials.** A label attached to an image that says where it came from and how it was changed. Anyone can remove the label, for example by taking a screenshot.
+
+**Crop corner.** The place where a crop starts. The fixed pipeline always starts from the centre. The crop position test also tries random corners and corners on the 8 pixel grid that JPEG works on.
 
 **Deepfake.** A fake image, video, or audio made by a computer program that looks or sounds real.
 
@@ -35,6 +39,8 @@ Words are listed in alphabetical order. We add a word the first time a document 
 **Hash.** A short code made from a file. The same file always gives the same code, and the file cannot be rebuilt from the code. Take It Down uses hashes so the image itself is not sent. This is how the service describes itself.
 
 **Inpainting.** Filling in or replacing part of a photo with new content made by a program.
+
+**Known band.** The range of fine and coarse detail a protection writes its change into. An attacker who has our code can remove that range. Each protection declares its own.
 
 **PSNR.** Peak signal to noise ratio. A score in decibels for how close two photos are. A higher number means more alike. Identical photos have no finite value.
 

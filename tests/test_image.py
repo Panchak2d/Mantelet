@@ -2,6 +2,7 @@ import io
 
 import numpy as np
 import pytest
+from conftest import smooth_photo
 from PIL import Image, UnidentifiedImageError
 
 from mantelet import image
@@ -219,3 +220,48 @@ def test_load_image_reads_an_open_file_object():
     make_image((30, 20)).save(buffer, format="PNG")
     buffer.seek(0)
     assert image.load_image(buffer).size == (30, 20)
+
+
+def test_crop_at_cuts_the_requested_corner_and_rejects_one_that_does_not_fit():
+    img = Image.fromarray(
+        np.arange(100 * 100 * 3, dtype=np.uint32).reshape(100, 100, 3).astype(np.uint8)
+    )
+    cropped = image.crop_at(img, 5, 7, keep=0.5)
+    assert cropped.size == (50, 50)
+    assert np.array_equal(np.asarray(cropped), np.asarray(img)[7:57, 5:55])
+    with pytest.raises(ValueError, match="does not fit"):
+        image.crop_at(img, 51, 0, keep=0.5)
+
+
+def test_random_crop_offset_repeats_for_one_seed_and_always_fits():
+    first = image.random_crop_offset((410, 512), 0.8, seed=3)
+    assert first == image.random_crop_offset((410, 512), 0.8, seed=3)
+    offsets = {image.random_crop_offset((410, 512), 0.8, seed=s) for s in range(200)}
+    assert len(offsets) > 20
+    assert all(0 <= left <= 410 - 328 and 0 <= top <= 512 - 409 for left, top in offsets)
+
+
+def test_grid_aligned_offsets_are_all_multiples_of_the_grid_and_include_the_origin():
+    offsets = image.grid_aligned_offsets((512, 512), 0.8, grid=8)
+    assert (0, 0) in offsets
+    assert all(left % 8 == 0 and top % 8 == 0 for left, top in offsets)
+    assert max(left for left, _ in offsets) == 96
+    with pytest.raises(ValueError, match="grid"):
+        image.grid_aligned_offsets((512, 512), 0.8, grid=0)
+
+
+def test_the_fixed_pipeline_is_the_centre_crop_and_the_random_variant_keeps_its_numbers():
+    img = smooth_photo(5, 300)
+    left, top = image.centre_crop_offset(image.resized_size(img.size), image.PIPELINE_CROP_KEEP)
+    assert np.array_equal(
+        np.asarray(image.platform_pipeline(img)),
+        np.asarray(image.platform_pipeline_at(img, left, top)),
+    )
+    randomised = image.platform_pipeline_random_crop(img, seed=1)
+    assert randomised.size == image.platform_pipeline(img).size
+    assert np.array_equal(
+        np.asarray(randomised), np.asarray(image.platform_pipeline_random_crop(img, seed=1))
+    )
+    assert not np.array_equal(
+        np.asarray(randomised), np.asarray(image.platform_pipeline_random_crop(img, seed=2))
+    )

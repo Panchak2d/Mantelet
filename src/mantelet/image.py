@@ -96,18 +96,66 @@ def resize_long_side(img: Image.Image, target: int = 512) -> Image.Image:
     return img.resize((new_width, new_height), Resampling.LANCZOS)
 
 
-def centre_crop(img: Image.Image, keep: float = 0.8) -> Image.Image:
-    """Crop the central ``keep`` fraction of the width and height."""
+def crop_size(size: tuple[int, int], keep: float) -> tuple[int, int]:
     if not 0 < keep <= 1:
         raise ValueError(f"keep must be above 0 and at most 1, got {keep}")
-    width, height = img.size
+    width, height = size
     new_width = int(width * keep)
     new_height = int(height * keep)
     if new_width < 1 or new_height < 1:
         raise ValueError(f"keep={keep} leaves nothing of a {width}x{height} image")
-    left = (width - new_width) // 2
-    top = (height - new_height) // 2
+    return new_width, new_height
+
+
+def centre_crop_offset(size: tuple[int, int], keep: float = 0.8) -> tuple[int, int]:
+    """The (left, top) corner of the central ``keep`` crop of an image of this size."""
+    new_width, new_height = crop_size(size, keep)
+    return (size[0] - new_width) // 2, (size[1] - new_height) // 2
+
+
+def crop_at(img: Image.Image, left: int, top: int, keep: float = 0.8) -> Image.Image:
+    """Crop a ``keep`` fraction of the width and height with its corner at (left, top)."""
+    new_width, new_height = crop_size(img.size, keep)
+    if not (0 <= left <= img.size[0] - new_width and 0 <= top <= img.size[1] - new_height):
+        raise ValueError(
+            f"a {new_width}x{new_height} crop at ({left}, {top}) does not fit in {img.size}"
+        )
     return img.crop((left, top, left + new_width, top + new_height))
+
+
+def centre_crop(img: Image.Image, keep: float = 0.8) -> Image.Image:
+    """Crop the central ``keep`` fraction of the width and height."""
+    left, top = centre_crop_offset(img.size, keep)
+    return crop_at(img, left, top, keep)
+
+
+def random_crop_offset(
+    size: tuple[int, int], keep: float = 0.8, seed: int | None = None
+) -> tuple[int, int]:
+    """A seeded (left, top) corner anywhere a ``keep`` crop fits.
+
+    The same seed gives the same corner.
+    """
+    new_width, new_height = crop_size(size, keep)
+    rng = np.random.default_rng(seed)
+    return (
+        int(rng.integers(0, size[0] - new_width + 1)),
+        int(rng.integers(0, size[1] - new_height + 1)),
+    )
+
+
+def grid_aligned_offsets(
+    size: tuple[int, int], keep: float = 0.8, grid: int = 8
+) -> list[tuple[int, int]]:
+    """Every crop corner whose left and top are both multiples of ``grid``, in reading order."""
+    if grid < 1:
+        raise ValueError(f"grid must be at least 1, got {grid}")
+    new_width, new_height = crop_size(size, keep)
+    return [
+        (left, top)
+        for top in range(0, size[1] - new_height + 1, grid)
+        for left in range(0, size[0] - new_width + 1, grid)
+    ]
 
 
 def jpeg_compress(img: Image.Image, quality: int = 75) -> Image.Image:
@@ -146,6 +194,23 @@ def add_gaussian_noise(
     return Image.fromarray(noisy)
 
 
+def platform_pipeline_at(img: Image.Image, left: int, top: int) -> Image.Image:
+    """The fixed pipeline with the crop corner at (left, top) of the resized photo.
+
+    The numbers are the fixed ones. Only the place where the crop starts is free.
+    Use ``resized_size`` to find the size of the resized photo.
+    """
+    _require_rgb(img)
+    img = resize_long_side(img, target=PIPELINE_LONG_SIDE)
+    img = crop_at(img, left, top, keep=PIPELINE_CROP_KEEP)
+    return jpeg_compress(img, quality=PIPELINE_JPEG_QUALITY)
+
+
+def resized_size(size: tuple[int, int], target: int = PIPELINE_LONG_SIDE) -> tuple[int, int]:
+    """The size ``resize_long_side`` gives a photo of this size."""
+    return resize_long_side(Image.new("L", size), target).size
+
+
 def platform_pipeline(img: Image.Image) -> Image.Image:
     """Apply the fixed platform processing pipeline.
 
@@ -154,10 +219,19 @@ def platform_pipeline(img: Image.Image) -> Image.Image:
     75. They are the stand-in for what a typical social site does to a photo.
     """
     _require_rgb(img)
-    img = resize_long_side(img, target=PIPELINE_LONG_SIDE)
-    img = centre_crop(img, keep=PIPELINE_CROP_KEEP)
-    img = jpeg_compress(img, quality=PIPELINE_JPEG_QUALITY)
-    return img
+    left, top = centre_crop_offset(resized_size(img.size), PIPELINE_CROP_KEEP)
+    return platform_pipeline_at(img, left, top)
+
+
+def platform_pipeline_random_crop(img: Image.Image, seed: int | None = None) -> Image.Image:
+    """The fixed pipeline with a seeded random crop corner instead of the centre.
+
+    Same 512, 80 percent and quality 75. It is reported beside the centre crop
+    result and never replaces it. The same seed gives the same photo.
+    """
+    _require_rgb(img)
+    left, top = random_crop_offset(resized_size(img.size), PIPELINE_CROP_KEEP, seed)
+    return platform_pipeline_at(img, left, top)
 
 
 def mild_platform_pipeline(img: Image.Image) -> Image.Image:

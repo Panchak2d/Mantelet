@@ -25,6 +25,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+ml = [
+    "torch>=2.14,<2.15",
+]
 dev = [
     "pytest>=9.1.1,<10",
     "ruff>=0.16.10,<0.17",

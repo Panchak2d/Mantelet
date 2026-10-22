@@ -2,7 +2,7 @@
 
 Reader: a beginner who wants to run the project on an EndeavourOS laptop (Arch-based Linux). You need a terminal and basic comfort typing commands.
 
-Last reviewed: 21 October 2026
+Last reviewed: 22 October 2026
 
 This page gets the project running on the CPU. The graphics card is not used. We have not yet tested these steps on EndeavourOS itself. If a step fails, open a [documentation issue](https://github.com/Panchak2d/mantelet/issues/new/choose) and say which step.
 
@@ -78,7 +78,9 @@ The red team tries to undo toy protections. A toy adds a hidden pattern and does
 python scripts/run_redteam.py --dataset-id facesynthetics --source data/dataset_100.zip --count 20
 ```
 
-Each photo is protected by the script itself. The script never reads a photo that someone else protected. A 512 pixel photo takes about 50 seconds on a laptop CPU for all three toys, so 20 photos take around 17 minutes. The results, a CSV and a report are written to `outputs/redteam-facesynthetics-seed0/`. To rebuild the report from a results file, run `python scripts/make_report.py` on its `results.json`, as for the baseline.
+Each photo is protected by the script itself. The script never reads a photo that someone else protected. A 512 pixel photo takes about 50 seconds on a laptop CPU for all three toys, plus about 2 seconds for the crop position test, so 20 photos take around 18 minutes. The results, two CSV files and a report are written to `outputs/redteam-facesynthetics-seed0/`. `records.csv` has one row per attack and `pipeline.csv` has the survival through the fixed pipeline at many crop positions. To rebuild the report from a results file, run `python scripts/make_report.py` on its `results.json`, as for the baseline.
+
+To add the face match, run `python scripts/fetch_models.py` first and add `--models-dir data/models`. Every attacked photo that stays above the quality floor is then matched against the face in the unprotected original. This adds a few minutes. Without it the face match columns stay empty and the report says so. The edit success column stays empty in every run until an editing model is built.
 
 ## Pinned versions
 
@@ -88,20 +90,32 @@ Each photo is protected by the script itself. The script never reads a photo tha
 | Pillow | 12.3 or newer in the 12 series | Releases before 12.1.1 have a known memory corruption bug when opening crafted image files, and 12.2.0 and 12.3.0 fix more. Checked 8 October 2026 against the Pillow release notes |
 | NumPy | 2.2 or newer, below 2.6 | Tests pass on 2.4.4 and 2.5.3 |
 | OpenCV (`opencv-python-headless`) | 4.14.0.94 or newer in the 4 series | Runs the face detector and recogniser. Version 5.0.0.93 exists. The OpenCV Zoo says the version 5 engine handles the fixed-size detector file differently, and we have not tested it. Checked 9 October 2026 on PyPI |
+| PyTorch (extra `ml`) | 2.14, below 2.15 | Optional. Install with `pip install -e ".[ml]"`. Version 2.14 is the last release with a CUDA 12.x build, which is the only one that covers a Pascal card (claim C-004). The newest 2.14 release on PyPI was 2.14.1 when checked on 22 October 2026. Nothing imports it yet |
 | pytest | 9.1.1 or newer in the 9 series | Current when checked |
 | ruff | 0.16.10 or newer in the 0.16 series | Current when checked |
 | uv | whatever `pacman` gives you | Arch lists `uv` in its extra repository |
 
 All of these were checked on 5 October 2026 against PyPI, the Arch package pages, and the Python developer guide.
 
-## Your graphics card and PyTorch (for later)
+## Your graphics card and PyTorch
 
-Nothing uses PyTorch. This section is a note for later steps.
+Everything so far runs on the CPU, and so do the first protection experiments, because a small face model fits in ordinary memory. A GPU is optional until the steps that run diffusion models.
 
-- Your laptop has an NVIDIA MX330 with about 2 GB of video memory. It is a Pascal card (compute capability 6.1). We confirmed the card family and memory from spec sheets. We have not yet checked the compute capability on your own machine. To check it later, run `nvidia-smi` once the driver is installed.
-- PyTorch maintainers wrote on the PyTorch developer forum that the CUDA 12.8 and newer builds drop Pascal cards. They also wrote that version 2.14 is the last release with CUDA 12.x builds. After that, a Pascal card needs a PyTorch built from source. This is **Reported**. We will check it again before we pin PyTorch.
-- Because of that, the plan is CPU first. later steps run on the CPU.
-- 2 GB of video memory cannot realistically run the image editing models used in later steps. Those steps need an outside GPU. 
+**Check the card.** Run this once the NVIDIA driver is installed. It changes nothing.
+
+```bash
+python scripts/check_gpu.py
+```
+
+It prints the card, its compute capability, its memory and its driver, and, if PyTorch is installed, whether that PyTorch build has code for the card. The MX330 should show compute capability 6.1 (claim C-040). Three sources agree, but none of them is NVIDIA's own list, so send us the output if it shows something else.
+
+What we found when we rechecked on 22 October 2026 (claim C-004, **Reported**):
+
+- The MX330 is a Pascal card with 2 GB of video memory. 2 GB cannot realistically run the image editing models used in steps 9 to 12, so those steps need an outside GPU, see [compute options](../../research/compute-options.md).
+- PyTorch builds for CUDA 12.8 and newer do not include Pascal. The CUDA 12.6 build does, and it is the last one: version 2.14 is the last release with a CUDA 12.x build. That build is served from `download.pytorch.org` and not from PyPI. The PyPI wheels of 2.14 are built for newer cards. This is why we pin PyTorch to the 2.14 series. Version 2.15 would drop the card.
+- **The driver matters more than PyTorch on EndeavourOS.** NVIDIA's 580 series is the last driver series that supports Pascal. Arch Linux moved its normal packages to the 590 series in December 2025, which does not support the card. If the card does not show up in `nvidia-smi`, install the older driver from the AUR, for example `nvidia-580xx-dkms` with `nvidia-580xx-utils`, and remove the newer `nvidia` packages first. We have not tested this on your machine.
+- To use the card with PyTorch, install the CUDA 12.6 build of 2.14 from the PyTorch download site, then run `scripts/check_gpu.py` again. The install line is on pytorch.org, and we did not run it. If you skip this step, PyTorch from PyPI works on the CPU.
+- We have not run any PyTorch build on a Pascal card. The CUDA 12.6 build lists code for sm_60 and not sm_61. NVIDIA's rule is that a binary for sm_60 runs on a 6.x card with a higher minor number. `scripts/check_gpu.py` applies that rule and prints the result.
 
 ## One-time step for the maintainer
 

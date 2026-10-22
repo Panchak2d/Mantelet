@@ -2,7 +2,7 @@
 
 Reader: a researcher or contributor who wants to know who we defend against and what we try to stop.
 
-Last reviewed: 21 October 2026
+Last reviewed: 22 October 2026
 
 This page writes down who might attack, what they can do, and what we are trying to stop. The research plan fixes the threats and the attacker levels. This page explains them in full.
 
@@ -78,5 +78,5 @@ We are also not modelling the case where the attacker already has many photos of
 | 3 | The image toolkit builds the transformations platforms apply |
 | 4 | The first baseline measures edit success and face match on synthetic faces |
 | 5 | The red team builds the attack tools for levels 1 to 3 and tests them on toy protections. The attacks that need a GPU wait for step 9 |
-| 6 | First protection experiments and **Gate 1** |
+| 6 | The red team gets the face match, the crop position test and a band declared by each protection. First protection experiments and **Gate 1** follow |
 | 12 | Attacker levels 0 to 5 tested and **Gate 3** |

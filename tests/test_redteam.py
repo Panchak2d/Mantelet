@@ -15,12 +15,12 @@ def noise_protection(amount):
     return toy.Protection("loud", "Visible grain", apply)
 
 
-def run(photos, protections=toy.TOY_PROTECTIONS[:1], seed=0, names=None):
+def run(photos, protections=toy.TOY_PROTECTIONS[:1], seed=0, names=None, **extra):
     names = names or list(photos)
     meta = redteam.build_meta(
         {"id": "x", "name": "X set", "licence": "Test licence", "status": "approved"}, len(names)
     )
-    return redteam.run_redteam(names, photos.__getitem__, protections, seed, meta)
+    return redteam.run_redteam(names, photos.__getitem__, protections, seed, meta, **extra)
 
 
 @pytest.fixture(scope="module")
@@ -141,3 +141,129 @@ def test_the_records_are_written_as_csv(small_run, tmp_path):
 
 def test_the_survival_limit_matches_the_fixed_test_plan_number():
     assert redteam.SURVIVAL_FLOOR == 0.5
+
+
+class FaceFor:
+    """A stand-in face model. It finds a face only in photos whose first pixel is listed."""
+
+    def __init__(self, found_in):
+        self.found_in = found_in
+
+    def embed(self, img):
+        return (
+            np.array([1.0, 0.0, 0.0])
+            if int(np.asarray(img)[0, 0, 0]) % 2 in self.found_in
+            else None
+        )
+
+
+class OnlyTheFirstCall:
+    """Finds the face in the first photo it sees, which is the original, and never again."""
+
+    def __init__(self):
+        self.calls = 0
+
+    def embed(self, _img):
+        self.calls += 1
+        return np.array([1.0, 0.0]) if self.calls == 1 else None
+
+
+class AlwaysEdits:
+    name = "stand-in edit"
+
+    def succeeds(self, original, candidate, seed):
+        return True
+
+
+def small_photos(count=2):
+    from conftest import smooth_photo
+
+    return {f"p{index}": smooth_photo(index, 64) for index in range(count)}
+
+
+def test_the_known_band_attack_runs_only_on_protections_that_declare_a_band():
+    assert toy.TOY_PROTECTIONS[0].band is None
+    assert toy.TOY_PROTECTIONS[1].band == toy.TOY_PROTECTIONS[2].band
+    without = [a.name for a in redteam.attack_catalogue(band=None)]
+    with_band = [a.name for a in redteam.attack_catalogue(band=(4.0, 16.0))]
+    assert "known-band-removal" not in without and "known-band-removal" in with_band
+    run_result = run(small_photos(), toy.TOY_PROTECTIONS[:2])
+    assert {
+        r["protection"] for r in run_result["records"] if r["attack"] == "known-band-removal"
+    } == {"toy-band"}
+    assert "known-band-removal" in [a[0] for a in run_result["meta"]["attacks"]]
+
+
+def test_a_protection_can_declare_its_own_band_and_the_attack_removes_that_band():
+    from conftest import smooth_photo
+
+    def apply(img, seed):
+        pattern = toy.band_pattern((img.size[1], img.size[0], 3), seed, 2.0, 5.0)
+        return toy._add(img, pattern)
+
+    own = toy.Protection("own", "A band of its own", apply, band=(2.0, 5.0))
+    original = smooth_photo(3, 128)
+    shielded = own.apply(original, 1)
+    attack = {a.name: a for a in redteam.attack_catalogue(band=own.band)}["known-band-removal"]
+    cleaned = attack.run(shielded, 0.25, 0)
+    assert redteam.survival(original, shielded, cleaned) < 0.3
+    wrong = {a.name: a for a in redteam.attack_catalogue(band=(8.0, 32.0))}["known-band-removal"]
+    assert redteam.survival(original, shielded, wrong.run(shielded, 0.25, 0)) > 0.6
+
+
+def test_without_a_face_model_or_editor_the_new_columns_are_empty_and_the_report_says_so():
+    result = run(small_photos())
+    assert all(
+        r["face_match"] is None and r["edit_success"] is None and r["similarity"] is None
+        for r in result["records"]
+    )
+    assert result["meta"]["face_model"] is False and result["meta"]["editor"] is None
+    text = report.render_redteam_report(result)
+    assert "Face match: not measured" in text and "Edit success: not measured" in text
+
+
+def test_every_admissible_result_is_matched_against_the_original_face():
+    photos = small_photos()
+    result = run(photos, face_model=FaceFor({0, 1}))
+    admissible = [r for r in result["records"] if r["admissible"]]
+    assert admissible and all(r["face_match"] is True for r in admissible)
+    assert all(r["original_face_found"] is True for r in result["records"])
+    assert all(r["face_match"] is None for r in result["records"] if not r["admissible"])
+    top = redteam.summarise(result)[0]["levels"][-1]["face_match"]
+    assert top["wins"] == top["photos"] == len(photos)
+
+
+def test_a_face_not_found_afterwards_counts_as_no_match_and_a_missing_original_is_left_out():
+    result = run(small_photos(1), face_model=OnlyTheFirstCall())
+    assert all(r["original_face_found"] for r in result["records"])
+    assert all(r["face_match"] is False for r in result["records"] if r["admissible"])
+    assert redteam.summarise(result)[0]["levels"][0]["face_match"]["wins"] == 0
+    nothing = run(small_photos(1), face_model=FaceFor(set()))
+    assert all(r["original_face_found"] is False for r in nothing["records"])
+    assert all(r["face_match"] is None for r in nothing["records"])
+    assert redteam.summarise(nothing)[0]["levels"][0]["face_match"] is None
+
+
+def test_an_editor_is_run_on_every_admissible_result_and_the_attacker_wins_if_any_edit_works():
+    result = run(small_photos(), editor=AlwaysEdits())
+    assert all(r["edit_success"] is True for r in result["records"] if r["admissible"])
+    assert result["meta"]["editor"] == "stand-in edit"
+    rate = redteam.summarise(result)[0]["levels"][0]["edit_success"]
+    assert rate["rate"] == 1.0
+    assert "stand-in edit" in report.render_redteam_report(result)
+
+
+def test_the_pipeline_record_has_survival_at_many_crop_positions_and_the_centre_face_match():
+    result = run(small_photos(), face_model=FaceFor({0, 1}))
+    assert len(result["pipeline"]) == 2
+    row = result["pipeline"][0]
+    assert row["worst"] <= row["centre"] and row["face_match"] is True
+    pipe = redteam.summarise(result)[0]["pipeline"]
+    assert pipe["photos"] == 2 and pipe["face_photos"] == 2
+    assert "Corners on the 8 pixel grid" in report.render_redteam_report(result)
+
+
+def test_results_from_before_these_columns_still_render():
+    result = run(small_photos())
+    del result["pipeline"], result["meta"]["face_model"], result["meta"]["editor"]
+    assert "Not measured in this run." in report.render_redteam_report(result)

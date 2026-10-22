@@ -165,6 +165,50 @@ def _level_table(summary: dict) -> list[str]:
     return rows
 
 
+def _effect_table(summary: dict, key: str, what: str) -> list[str]:
+    rows = [
+        f"| Attackers up to level | Photos | Photos where some admissible result {what} "
+        "(95% interval) |",
+        "|---|---|---|",
+    ]
+    for item in summary["levels"]:
+        rate = item[key]
+        if rate is None:
+            rows.append(f"| {item['max_level']} | 0 | n/a |")
+            continue
+        low, high = rate["interval"] if rate["interval"] else (None, None)
+        interval_text = "n/a" if low is None else f"{_percent(low)} to {_percent(high)}"
+        rows.append(
+            f"| {item['max_level']} | {rate['photos']} | {rate['wins']} "
+            f"({_percent(rate['rate'])}, {interval_text}) |"
+        )
+    return rows
+
+
+def _pipeline_lines(summary: dict) -> list[str]:
+    pipe = summary["pipeline"]
+    if not pipe["photos"]:
+        return ["No photo reached the pipeline test."]
+    lines = [
+        "| Crop position | Survival, mean (lowest) |",
+        "|---|---|",
+        f"| Centre (the fixed pipeline) | {_spread_text(pipe['centre'])} |",
+        f"| Seeded random corners | {_spread_text(pipe['random'])} |",
+        f"| Corners on the 8 pixel grid | {_spread_text(pipe['aligned'])} |",
+        f"| Worst corner for each photo | {_spread_text(pipe['worst'])} |",
+        "",
+        f"Photos whose worst corner keeps at least {round(100 * redteam.SURVIVAL_FLOOR)} "
+        f"percent: {pipe['held']} of {pipe['photos']}.",
+    ]
+    if pipe["face_photos"]:
+        lines += [
+            "",
+            f"Face still matches after the fixed pipeline: {pipe['face_matched']} of "
+            f"{pipe['face_photos']} photos.",
+        ]
+    return lines
+
+
 def _attack_table(summary: dict) -> list[str]:
     rows = [
         "| Attack | Level | Photos attacked | Photos with an admissible result "
@@ -223,6 +267,21 @@ def render_redteam_report(results: dict) -> str:
             f"{summary['unusable']}."
         )
         lines += ["", "Best attack by attacker level:", ""] + _level_table(summary)
+        if meta.get("face_model"):
+            lines += ["", "Face match, counted against the face in the unprotected original:", ""]
+            lines += _effect_table(summary, "face_match", "still matches the face")
+        else:
+            lines += ["", "Face match: not measured, no face model was given."]
+        if meta.get("editor"):
+            lines += ["", f"Stand-in edit ({meta['editor']}):", ""]
+            lines += _effect_table(summary, "edit_success", "still lets the edit work")
+        else:
+            lines += ["", "Edit success: not measured. No editing model is built yet."]
+        lines += ["", "Survival through the fixed pipeline at many crop positions:", ""]
+        if "pipeline" in results:
+            lines += _pipeline_lines(summary)
+        else:
+            lines += ["Not measured in this run."]
         lines += ["", "Each attack alone, at its best strength for each photo:", ""]
         lines += _attack_table(summary)
     if results["not_applicable"]:
@@ -240,6 +299,8 @@ def render_redteam_report(results: dict) -> str:
         f"- Toy band: Gaussian sigmas {meta['toy']['band_sigmas'][0]:g} and "
         f"{meta['toy']['band_sigmas'][1]:g} pixels",
         f"- Survival needed: {round(100 * meta['survival_floor'])} percent",
+        f"- Face model: {'used' if meta.get('face_model') else 'not used'}. "
+        f"Editor: {meta.get('editor') or 'none'}",
     ]
     lines += [f"- {name}: {number}" for name, number in meta["libraries"].items()]
     return "\n".join(lines) + "\n"

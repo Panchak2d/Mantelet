@@ -41,3 +41,11 @@ def test_red_team_does_not_overwrite_results_without_force_and_checks_the_count(
     assert "--force" in capsys.readouterr().err
     assert run("--dataset-id", "unit-test-set", "--source", folder, "--count", 0) == 1
     assert "--count" in capsys.readouterr().err
+
+
+def test_red_team_refuses_a_models_folder_that_has_no_model_files(monkeypatch, tmp_path, capsys):
+    folder = approved_dataset(monkeypatch, tmp_path)
+    args = ("--dataset-id", "unit-test-set", "--source", folder, "--out", tmp_path / "o")
+    assert run(*args, "--models-dir", tmp_path / "no-models") == 1
+    assert "fetch_models.py" in capsys.readouterr().err
+    assert not (tmp_path / "o").exists()

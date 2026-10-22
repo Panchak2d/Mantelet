@@ -2,7 +2,7 @@
 
 Reader: a contributor or learner who wants to know what is in each folder.
 
-Last reviewed: 21 October 2026
+Last reviewed: 22 October 2026
 
 There is no protection code yet. The only machine learning models are the two face models used for measuring. The only protections are toys, made to test the attack tools. This page lists what exists today. It grows as the code grows.
 
@@ -12,14 +12,14 @@ There is no protection code yet. The only machine learning models are the two fa
 |---|---|
 | `README.md`, `SAFETY.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `CHANGELOG.md` | The front door and the rules |
 | `LICENSE`, `LICENSE-docs.md` | Apache-2.0 for the code, CC BY 4.0 for the text |
-| `pyproject.toml` | Package name, Python version, the libraries the code needs, and the checking tools |
+| `pyproject.toml` | Package name, Python version, the libraries the code needs, the optional `ml` extra (PyTorch 2.14) and the checking tools |
 | `uv.lock` | The exact version of every library, so everyone installs the same ones |
 | `.python-version` | The exact Python version used for development |
 | `.github/` | Automatic checks and the forms for issues and pull requests |
 | `docs/` | The documents for readers and contributors |
 | `research/` | The claims ledger, the bibliography, and the register of datasets and models with their licences |
-| `scripts/` | Small tools that run from the command line: the docs checker, `demo_pipeline.py`, `fetch_models.py`, `run_baseline.py`, `run_redteam.py` and `make_report.py` |
-| `src/mantelet/` | The Python package. `image.py` loads, saves and changes images. `metrics.py`, `faces.py`, `datasets.py`, `baseline.py` and `report.py` measure. `toy.py`, `attacks.py` and `redteam.py` are the red team |
+| `scripts/` | Small tools that run from the command line: the docs checker, `check_gpu.py`, `demo_pipeline.py`, `fetch_models.py`, `run_baseline.py`, `run_redteam.py` and `make_report.py` |
+| `src/mantelet/` | The Python package. `image.py` loads, saves and changes images. `cropsweep.py` measures survival through the fixed pipeline at many crop positions. `metrics.py`, `faces.py`, `datasets.py`, `baseline.py` and `report.py` measure. `toy.py`, `attacks.py` and `redteam.py` are the red team |
 | `data/`, `outputs/` | Created by you, never committed. Datasets and model files go in `data/`. Results go in `outputs/`. Git and the docs checker ignore both |
 | `tests/` | Automatic tests |
 
@@ -38,6 +38,8 @@ The pipeline imitates a social site. It is meant to change the photo in plain si
 Every function rejects settings that would give a broken image, such as a crop that keeps nothing or a blur radius that is not a finite number. The functions that need colour images refuse other image modes instead of guessing.
 
 `load_image` turns the photo upright using its rotation tag, so a phone photo is not processed sideways. It fills transparent areas with white and refuses 16-bit images, which cannot be converted without clipping. It opens only photo formats (JPEG, PNG, WebP, BMP, GIF and TIFF). The Pillow library can read many other formats, and several of its security fixes concern those readers.
+
+The crop can also start at a seeded random corner (`random_crop_offset`, `platform_pipeline_random_crop`), with the same fixed numbers. `cropsweep.py` runs the pipeline at the centre, at seeded random corners and at corners on the 8 pixel grid, and reports how much of a protection's change is left at each.
 
 `mild_platform_pipeline` is the milder second profile: it shrinks only above 1080 pixels, compresses at JPEG 85 and does not crop. The numbers of both pipelines are named constants at the top of `image.py`.
 
@@ -63,7 +65,7 @@ These files attack. `toy.py` makes three toy protections. Each adds a hidden pat
 
 `scripts/run_redteam.py` joins these together. It protects the photos itself and reads only datasets with the status `approved`, so it has no way to attack a photo that someone else protected. That is how [SAFETY.md](../../SAFETY.md) rule 7 is kept in the code. `report.py` also writes the red team report, and `make_report.py` picks the right report from the results file.
 
-Adding a real protection later means adding another `Protection` and, if it has a known band or structure, an attack that uses it. The attacks that need a diffusion model are not here yet.
+A `Protection` declares its own `band`, or none. The known band attack is built from that band and left out when there is none. `run_redteam` can take a face model, which fills a `face_match` column for every admissible result, and an editor, which fills `edit_success`. No editor exists yet. It also writes survival through the fixed pipeline at many crop positions to `pipeline.csv`. Adding a real protection later means adding another `Protection` that declares its band or structure, and an attack for any structure that is not a band. The attacks that need a diffusion model are not here yet.
 
 ## Automatic checks
 

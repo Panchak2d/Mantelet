@@ -2,7 +2,7 @@
 
 Reader: a researcher or contributor who wants to know what the research track is trying to do.
 
-Last reviewed: 21 October 2026
+Last reviewed: 22 October 2026
 
 This page is a short summary. The full research design is written in these pages:
 
@@ -11,6 +11,7 @@ This page is a short summary. The full research design is written in these pages
 - [Test plan](test-plan.md): how we measure success and failure, with fixed numbers.
 - [Data and ethics policy](data-and-ethics.md): what data we use and how we follow the safety rules.
 - [Datasets and models](../../research/datasets-and-models.md): the licence of every dataset and model, and what we do not know about them.
+- [Compute options](../../research/compute-options.md): the free and rented GPU services for later steps, and what their terms allow.
 
 No experiment on a real protection has run yet. The measuring tools and the red team attack tools are built and tested on made-up images and toy protections.
 
