@@ -2,13 +2,13 @@
 
 Reader: a parent, teacher, or researcher who wants to know what Mantelet cannot do.
 
-Last reviewed: 21 October 2026
+Last reviewed: 23 October 2026
 
 This page lists what Mantelet cannot do. It will grow as we learn more. We would rather you know the limits than trust the project too much.
 
 ## Mantelet does not protect anyone yet
 
-There is no tool. No photo has been protected. The only tests run so far check our own measuring and attack tools, on made-up photos and toy protections that do nothing against any model. Please do not rely on this project to keep any photo safe.
+There is no tool. No photo has been protected. Code for a first protection exists for researchers and has not been tested on real faces. The only runs so far check our own measuring and attack tools, on toy protections that do nothing against any model. Please do not rely on this project to keep any photo safe.
 
 ## If a tool exists one day, it will still have limits
 

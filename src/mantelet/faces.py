@@ -137,8 +137,8 @@ class OpenCVFaceModel:
             "onnx", np.frombuffer(recogniser_bytes, dtype=np.uint8), no_config
         )
 
-    def embed(self, img: Image.Image) -> np.ndarray | None:
-        """Return the face vector of the most confident face, or None if no face is found."""
+    def _detect(self, img: Image.Image) -> tuple[Image.Image, np.ndarray, np.ndarray] | None:
+        """Return the (possibly shrunk) photo, its BGR array and the best detection row."""
         if img.mode != "RGB":
             raise ValueError(f"expected an RGB image, got mode {img.mode}")
         if min(img.size) < MIN_DETECTION_SIDE:
@@ -148,9 +148,38 @@ class OpenCVFaceModel:
         bgr = np.ascontiguousarray(np.asarray(img)[:, :, ::-1])
         height, width = bgr.shape[:2]
         self._detector.setInputSize((width, height))
-        _, faces = self._detector.detect(bgr)
-        if faces is None or len(faces) == 0:
+        _, found = self._detector.detect(bgr)
+        if found is None or len(found) == 0:
             return None
-        best = faces[int(np.argmax(faces[:, -1]))]
-        aligned = self._recogniser.alignCrop(bgr, best)
-        return np.asarray(self._recogniser.feature(aligned), dtype=np.float32).reshape(-1)
+        return img, bgr, found[int(np.argmax(found[:, -1]))]
+
+    def align(self, img: Image.Image) -> np.ndarray | None:
+        """Return the aligned 112 by 112 BGR crop of the most confident face, or None."""
+        detection = self._detect(img)
+        if detection is None:
+            return None
+        _, bgr, best = detection
+        return np.asarray(self._recogniser.alignCrop(bgr, best))
+
+    def landmarks(self, img: Image.Image) -> np.ndarray | None:
+        """Return the five landmarks of the most confident face as a (5, 2) array, or None.
+
+        The order is the one YuNet gives them in, which is the order ``alignCrop`` reads.
+        The photo must not be larger than ``MAX_DETECTION_SIDE``, so the points are in
+        the coordinates of the photo that was passed in.
+        """
+        if max(img.size) > MAX_DETECTION_SIDE:
+            raise ValueError(f"the photo is larger than {MAX_DETECTION_SIDE} pixels on one side")
+        detection = self._detect(img)
+        if detection is None:
+            return None
+        return np.asarray(detection[2][4:14], dtype=np.float64).reshape(5, 2)
+
+    def embed_aligned(self, aligned_bgr: np.ndarray) -> np.ndarray:
+        """Return the face vector of an aligned 112 by 112 BGR crop."""
+        return np.asarray(self._recogniser.feature(aligned_bgr), dtype=np.float32).reshape(-1)
+
+    def embed(self, img: Image.Image) -> np.ndarray | None:
+        """Return the face vector of the most confident face, or None if no face is found."""
+        aligned = self.align(img)
+        return None if aligned is None else self.embed_aligned(aligned)

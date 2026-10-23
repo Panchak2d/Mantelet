@@ -2,7 +2,7 @@
 
 Reader: a researcher who wants to know exactly how we measure success and failure, and what numbers count as passing.
 
-Last reviewed: 22 October 2026
+Last reviewed: 23 October 2026
 
 This page fixes the pass and fail numbers before any experiment runs. The plan as planned requires this. The numbers below are chosen with written reasons. They will not change after we see results. If we change any of them later, we say so here and explain why.
 
@@ -139,7 +139,7 @@ Each attack has a list of strengths, such as the blur radius. The attacker tries
 
 **Face match and edit success.** Survival alone does not show whether a model is fooled (claim C-033). The red team records therefore carry two more columns for every attack result that stays above the quality floor.
 
-- `face_match`: the face model finds a face in the attacked photo and the cosine similarity to the face in the unprotected original is at least 0.363. A face not found counts as no match, and a photo whose original face is not found is left out of the face numbers and counted. These are the baseline counting rules. The column stays empty when no face model is given.
+- `face_match`: the face model finds a face in the attacked photo and the cosine similarity to the face in the unprotected original is at least 0.363. A face not found counts as no match, and a photo whose original face is not found is left out of the face numbers and counted. These are the baseline counting rules. The column stays empty when no face model is given. The face match after the fixed pipeline in `pipeline.csv` follows the same rule, with the centre crop as the processed photo, and has a similarity column.
 - `edit_success`: a stand-in edit, run on the attacked photo, worked. It needs an editing model, which is built in step 9, so the column is empty in every run until then and the report says it was not measured.
 
 The attacker wins on a photo when any admissible result, up to the attacker level, still has a face match (or a working edit). This is the worst case rule again. The attacker success rate is the share of photos with a face found in the original where the attacker wins, with a 95 percent Wilson interval. It includes the unattacked protected photo, so level 0 shows what the protection does on its own. The unprotected baseline for the 50 point drop is the baseline match rate in the same conditions.
@@ -162,6 +162,60 @@ The attacker wins on a photo when any admissible result, up to the attacker leve
 
 The tests in `tests/test_attacks.py` and `tests/test_redteam.py` check these expectations on made-up photos. A red team result is also a repeat of those expectations on real test photos: run `scripts/run_redteam.py` (see [Setup](../development/setup.md)).
 
+## The copy check of the SFace copy
+
+A protection is tuned against a PyTorch copy of SFace, and the red team judges it with the SFace file run through OpenCV. If the two disagree, a result on the copy says nothing about the red team's face match. `scripts/check_sface_copy.py` therefore compares the two on real aligned faces before any protection is tuned. OpenCV gives SFace an aligned 112 by 112 crop as RGB values from 0 to 255 with no mean and no scaling (claim C-042), and the copy takes the same input.
+
+Fixed on 22 October 2026, before any copy result exists, and a Guess until the first run:
+
+- At least 10 faces are found in the sampled photos.
+- For every face, the cosine between the OpenCV vector and the copy's vector is at least 0.999.
+- For every pair of faces, the cosine similarity measured with OpenCV's vectors and with the copy's differs by at most 0.01.
+
+The reason: two float32 implementations of the same network agree far more closely than these limits, so a copy that misses them is wrong and not merely noisy. We also count the pairs where the copy and OpenCV disagree on the same person decision at 0.363. That count is reported and is not a pass limit. If the copy fails, no protection is tuned against it. A pass says the copy reproduces OpenCV on these faces and says nothing about any protection.
+
+## The first protection
+
+The first protection is projected gradient descent (PGD) against the PyTorch copy of SFace (`src/mantelet/protect.py`). It changes the pixels that feed the aligned face crop by at most a budget, a whole number of pixel values out of 255, so as to push the face vector of the crop away from the vector of the unprotected face. The real face model in the red team stays OpenCV's. A photo with no face found is left unchanged.
+
+Fixed on 23 October 2026, before any protection result exists. Every number is a Guess until a run tests it.
+
+- **Alignment.** The change is tuned through the same alignment OpenCV uses: a similarity transform from the five landmarks to fixed target points, then a bilinear warp to 112 by 112 (claim C-045). Only pixels that reach the crop receive a gradient, so the change stays near the face.
+- **Settings.** 40 steps, step size one twentieth of the budget, a random start, one restart. Sources disagree on the defaults (claim C-046), so we followed the setting reported for the original method and did not tune it.
+- **Two kinds.** `pgd` is tuned on the photo as it is. `pgd-jpeg` is also tuned through a random shift of 0 to 7 pixels and a differentiable JPEG at a random quality from 60 to 90 (claims C-047 and C-048). The quality range does not centre on 75 on purpose, so the protection is not tuned to the quality the fixed pipeline uses. Both are reported. Neither is tuned against any attack.
+- **Budgets.** The sweep runs 1, 2, 3, 4, 6, 8, 12 and 16 by default. At a budget of 8 no pixel moves by more than 8, so the PSNR cannot fall below 30.07 dB. Larger budgets can fall under the quality floor, and the graph shows where.
+- **Budget used for Gate 1.** The largest budget in the sweep at which every sampled photo stays at or above the quality floor. A photo below the floor at a budget is left out of that budget's survival and face numbers and counted on its own. Other budgets are reported beside it and never used to rescue a failure.
+- **Declared band.** A protection declares the band its change lives in, because the level 3 known band attack is built from it. The band is measured at a budget of 8 on photos kept apart from the test set. Among bands that cover at most a quarter of all spatial frequencies, the one holding the most energy of the change is declared (`measure_band`). The share of energy inside it is reported, because a change spread over all frequencies has no real band and the known band attack is then weak. The collusion attack is aimed at a pattern shared between photos, and this change differs in every photo.
+
+### What counts as the effect
+
+Survival says whether the change is still in the photo. The effect is the drop in the face match, measured beside the unprotected photo through the same code, photos and pipeline (the `none` control in the red team run). The counting rule for a face that is not found, "no match", would credit the protection with faces that the processing lost on its own, so for the effect it is refined. The refinement is fixed before any protection result exists and the baseline rules above are otherwise unchanged.
+
+- A photo whose unprotected, processed face does not match the original is left out of the effect and counted on its own. Photo 000061 in the first red team run is such a photo: the face was found in the original and lost after the fixed resize and crop.
+- On the counted photos, a protected photo whose face is no longer found counts as an attacker win, because an attacker can find the face with another detector. The rate that counts it as no match is reported beside it.
+- The drop is 100 points minus the attacker win rate, because the unprotected baseline is a match on every counted photo.
+- Every report shows the three states of the protected photo: matches, found but no match, lost.
+
+### How Gate 1 is judged
+
+- The attacker levels are 0 to 2, as in the table below. Level 3 and the other crop corners are run and reported beside them, and they are never used to rescue a failure.
+- The effect is the larger of two attacker success rates: through the fixed pipeline at the centre crop, and the best result of attackers up to level 2, where the unattacked photo with a lost face also counts as an attacker win.
+- The other fixed numbers apply: survival at least 50 percent at the centre crop, PSNR at least 30 dB and SSIM at least 0.90 for every counted photo at the chosen budget, and a drop of at least 50 points.
+- **Visibility cannot be measured yet.** The limit of 25 percent noticing needs the human study in Batch 8. Until then only PSNR and SSIM are reported. The Gate 1 report says so, and a result can be a failure on another number but cannot be a full pass.
+- **On record before the run:** a protection tuned without compression is known to lose much of its effect under JPEG (claim C-047), so plain `pgd` may well miss the survival number at budgets that stay above 30 dB. That would show that this kind of protection fails the fixed pipeline. It would not show that no protection can pass.
+
+### The check of the pieces
+
+Before any protection is swept, `scripts/check_protection.py` checks three pieces on real faces: our crop against OpenCV's alignment, the gradient against a finite difference, and our JPEG against Pillow's. Fixed on 23 October 2026, before any result, and a Guess:
+
+- At least 10 faces. For every face, the cosine between OpenCV's vector for OpenCV's crop and the copy's vector for our crop is at least 0.999.
+- For 3 faces, the relative gap between autograd and a finite difference in float64 is at most 0.01.
+- The mean pixel gap between our JPEG and Pillow's JPEG at quality 75 is at most 1.0 on the sampled photos.
+
+If any limit is missed, no protection is swept until the piece is fixed.
+
+**First run, 23 October 2026 (owner's machine, 20 Face Synthetics faces).** The crop missed: the lowest cosine was 0.998911 against the limit of 0.999. The gradient met its limit (worst gap 1.12e-3) and the JPEG met its limit (mean gap 0.446). The cause is that OpenCV hands the recogniser a crop of whole pixel values, and our crop kept the smooth values. On made-up 512 pixel photos, rounding our crop cut its mean gap to OpenCV's from 0.142 to 0.012 pixel values, so the matrix and the interpolation agree (claim C-050, a Guess until the re-run). The crop now rounds the same way in the forward pass and lets the gradient pass straight through. The limits did not move. The check is run again, and `scripts/diagnose_crop.py` splits any further miss into matrix, interpolation and rounding.
+
 ## The datasets
 
 Each dataset is listed with its licence before use in the [register](../../research/datasets-and-models.md). The [data and ethics policy](data-and-ethics.md) sets the rules. Synthetic faces and consenting adults only. No images of people under 18. The first baseline uses the Face Synthetics sample once the owner has approved it.
@@ -173,7 +227,7 @@ Each experiment states which attacker levels it targets. The levels are in the [
 | Experiment step | Levels tested |
 |---|---|
 | later baseline | Level 0, no protection |
-| later first protection | Levels 0, 1, 2 |
+| later first protection | Levels 0, 1, 2 judged. Level 3 run and reported beside them |
 | later reproduced protection | Levels 0, 1, 2, 3 |
 | later final | Levels 0, 1, 2, 3, 4, 5 |
 

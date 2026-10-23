@@ -2,7 +2,7 @@
 
 Reader: anyone who meets a technical word in these documents and wants a plain meaning.
 
-Last reviewed: 22 October 2026
+Last reviewed: 23 October 2026
 
 Words are listed in alphabetical order. We add a word the first time a document uses it.
 
@@ -42,6 +42,10 @@ Words are listed in alphabetical order. We add a word the first time a document 
 
 **Known band.** The range of fine and coarse detail a protection writes its change into. An attacker who has our code can remove that range. Each protection declares its own.
 
+**L-infinity budget.** The most that any single pixel value may change, out of 255. A budget of 8 means no value moves by more than 8. It limits how much the photo changes, and it is the number on the horizontal axis of the budget graph.
+
+**Projected gradient descent (PGD).** A way to find a small change that pushes a model's answer in a chosen direction. It takes many small steps, each one following the direction in which the model changes fastest, and after every step it pulls the change back inside the budget.
+
 **PSNR.** Peak signal to noise ratio. A score in decibels for how close two photos are. A higher number means more alike. Identical photos have no finite value.
 
 **Perceptual budget.** How much a photo is allowed to change before a person can notice. It is a limit we set.
@@ -57,6 +61,8 @@ Words are listed in alphabetical order. We add a word the first time a document 
 **SSIM.** Structural similarity. A score from 0 to 1 that compares local patterns of light and detail in two photos. 1 means identical.
 
 **Stand-in edit.** A harmless edit used in place of a harmful one, for example changing the colour of a shirt. We never make nude or sexual images, so we measure with stand-ins.
+
+**Straight-through estimator.** A trick for steps that have no usable slope, such as rounding. The forward pass rounds. The backward pass pretends it did not. It lets us tune a change through a copy of JPEG compression.
 
 **Survival.** In the red team, the share of a protection's own change that is still in the photo after an attack. 1 means all of it and 0 means none.
 

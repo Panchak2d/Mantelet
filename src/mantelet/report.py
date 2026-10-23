@@ -7,7 +7,7 @@ status so a report cannot be separated from the rules the data came with.
 
 from __future__ import annotations
 
-from mantelet import baseline, redteam
+from mantelet import baseline, effect, redteam
 
 FEW_PHOTOS = 30
 
@@ -209,6 +209,49 @@ def _pipeline_lines(summary: dict) -> list[str]:
     return lines
 
 
+def _rate_text(rate: dict | None) -> str:
+    if rate is None or rate["rate"] is None:
+        return "n/a"
+    low, high = rate["interval"] if rate["interval"] else (None, None)
+    interval = "" if low is None else f", 95% interval {_percent(low)} to {_percent(high)}"
+    return f"{rate['wins']} of {rate['photos']} ({_percent(rate['rate'])}{interval})"
+
+
+def _effect_lines(results: dict, name: str) -> list[str]:
+    """Face match beside the unprotected photo, for one protection."""
+    pipe = effect.pipeline_effect(results.get("pipeline", []), name)
+    level = effect.level_effect(results["records"], name, 2)
+    if pipe is None and level is None:
+        return ["No photo had a face in the original, so there is no effect to report."]
+    lines = []
+    if pipe is not None:
+        states = pipe["states"]
+        lines += [
+            f"Photos with a face in the original: {pipe['with_face']}. The fixed pipeline alone "
+            f"lost the face on {pipe['lost_by_pipeline']} and left it found but not matching on "
+            f"{pipe['control_no_match']}. Those are left out. Counted photos (the unprotected "
+            f"photo still matches after the pipeline): {pipe['eligible']}.",
+            "",
+            "| Protected photo after the fixed pipeline | Photos |",
+            "|---|---|",
+            f"| Face matches | {states['match']} |",
+            f"| Face found, no match | {states['no_match']} |",
+            f"| Face lost | {states['lost']} |",
+            "",
+            f"Attacker success, a lost face counted as a win: {_rate_text(pipe['strict'])}. "
+            f"Drop against the unprotected photo: {_number(pipe['drop'], 1)} points. "
+            f"A lost face counted as no match: {_rate_text(pipe['as_counted'])}.",
+        ]
+    if level is not None:
+        lines += [
+            "",
+            f"Attackers up to level {level['max_level']}, a lost unattacked face counted as a "
+            f"win: {_rate_text(level['strict'])}. Drop: {_number(level['drop'], 1)} points. "
+            f"Without that rule: {_rate_text(level['as_counted'])}.",
+        ]
+    return lines
+
+
 def _attack_table(summary: dict) -> list[str]:
     rows = [
         "| Attack | Level | Photos attacked | Photos with an admissible result "
@@ -229,13 +272,25 @@ def render_redteam_report(results: dict) -> str:
     meta = results["meta"]
     dataset = meta["dataset"]
     floor = meta["quality_floor"]
+    if meta.get("subject", "toys") == "toys":
+        intro = (
+            "Every protection in this run is a toy. A toy adds a hidden pattern that we know "
+            "exactly, and it does nothing against any editing model or face matcher. The run "
+            "checks the attack tools, not a protection. It says nothing about whether a real "
+            "protection works."
+        )
+    else:
+        intro = (
+            "The protections in this run are tuned against a PyTorch copy of SFace, and the face "
+            "match is measured with the original SFace file run through OpenCV. This run covers "
+            "photos from one synthetic set, one face model and the attacks listed below. It "
+            "does not say that any photo is protected, and it measures nothing about editing "
+            "models."
+        )
     lines = [
         "# Red team report",
         "",
-        "Every protection in this run is a toy. A toy adds a hidden pattern that we know "
-        "exactly, and it does nothing against any editing model or face matcher. The run "
-        "checks the attack tools, not a protection. It says nothing about whether a real "
-        "protection works.",
+        intro,
         "",
         "## Run",
         "",
@@ -277,6 +332,9 @@ def render_redteam_report(results: dict) -> str:
             lines += _effect_table(summary, "edit_success", "still lets the edit work")
         else:
             lines += ["", "Edit success: not measured. No editing model is built yet."]
+        if meta.get("face_model") and "pipeline" in results:
+            lines += ["", "Face match beside the unprotected photo:", ""]
+            lines += _effect_lines(results, summary["protection"])
         lines += ["", "Survival through the fixed pipeline at many crop positions:", ""]
         if "pipeline" in results:
             lines += _pipeline_lines(summary)
@@ -294,10 +352,26 @@ def render_redteam_report(results: dict) -> str:
         lines += ["", "## Skipped photos", ""]
         lines += [f"- {item['image']}: {item['reason']}" for item in results["skipped"]]
     lines += ["", "## Settings", ""]
+    if meta.get("subject", "toys") == "toys":
+        lines += [
+            f"- Toy pattern strength: RMS {meta['toy']['pattern_rms']:g} pixel values",
+            f"- Toy band: Gaussian sigmas {meta['toy']['band_sigmas'][0]:g} and "
+            f"{meta['toy']['band_sigmas'][1]:g} pixels",
+        ]
+    elif meta.get("calibration"):
+        calibration = meta["calibration"]
+        band = calibration["band"]
+        band_text = (
+            "none found"
+            if band is None
+            else f"Gaussian sigmas {band[0]:g} and {band[1]:g} pixels"
+        )
+        lines.append(
+            f"- Declared band: {band_text}, measured on {calibration['calibration_photos']} "
+            f"photos kept apart from the test set at budget {calibration['calibration_budget']}. "
+            f"Share of the change inside it: {_percent(calibration['band_energy_share'])}"
+        )
     lines += [
-        f"- Toy pattern strength: RMS {meta['toy']['pattern_rms']:g} pixel values",
-        f"- Toy band: Gaussian sigmas {meta['toy']['band_sigmas'][0]:g} and "
-        f"{meta['toy']['band_sigmas'][1]:g} pixels",
         f"- Survival needed: {round(100 * meta['survival_floor'])} percent",
         f"- Face model: {'used' if meta.get('face_model') else 'not used'}. "
         f"Editor: {meta.get('editor') or 'none'}",

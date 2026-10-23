@@ -2,7 +2,7 @@
 
 Reader: a curious learner or researcher who wants to understand the technical idea.
 
-Last reviewed: 21 October 2026
+Last reviewed: 23 October 2026
 
 This page is mostly empty. It will be filled in as the experiments happen. We do not describe how something works until we have built and tested it.
 
@@ -30,6 +30,9 @@ We built the measuring tools before any protection, so we cannot fool ourselves.
 - **Baseline.** Before any protection exists, we run photos through shrinking, cropping, compression, blur and noise and measure what is left. A protection must be judged against that, not against a perfect score.
 
 - **Red team.** We built attacks that try to undo a protection before we built any protection. They are basic cleanup filters, the standard attacks from the papers we read, and attacks that use knowledge of how a protection is made. Each attack gets only the protected photo, never the original. We test them on toy protections, which add a hidden pattern that does nothing against any model, so we know the right answer. One toy is easy to remove on purpose. One has a design flaw on purpose: it adds the same pattern to every photo, so averaging many photos exposes it. One is different in every photo and has no such flaw. We then measure how much of the pattern is left, called survival, but only for attacked photos that still look close to the original. The attacks that need a diffusion model are not built yet. A toy result says nothing about a real protection.
+
+
+- **First protection (built, not yet tested on real faces).** It changes the pixels around a face by a small, fixed amount so that one open face recognition model no longer sees the same person. A computer finds each change by trying small steps and keeping the ones that move the face away from the original, which is called projected gradient descent. We built a plain version and a version that is also tuned through JPEG compression, because a change tuned without compression is known to wash out. The numbers that decide whether either one passes, including a face that the processing alone loses, are fixed in the [test plan](research/test-plan.md) before any result exists. Whether it changes anything on real faces is not known yet. A face recognition model is not an editing model, so even a good result would say nothing about editing.
 
 The exact settings are in the [test plan](research/test-plan.md).
 

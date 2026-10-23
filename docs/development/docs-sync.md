@@ -2,7 +2,7 @@
 
 Reader: anyone changing code, settings, or documents in this project.
 
-Last reviewed: 22 October 2026
+Last reviewed: 23 October 2026
 
 Documents must never fall behind the project. When you change something in the left column, check every document in the right column. If one describes something you changed, update it in the same change. If none needs updating, say so in your pull request or patch notes and say why.
 
@@ -31,6 +31,9 @@ Documents must never fall behind the project. When you change something in the l
 | `src/mantelet/datasets.py` (the register) | `research/datasets-and-models.md`, `docs/research/data-and-ethics.md` |
 | `src/mantelet/faces.py` (model files, thresholds) | `research/datasets-and-models.md`, `docs/research/test-plan.md`, `research/claims-ledger.md` |
 | `src/mantelet/baseline.py` and `metrics.py` (conditions, scores, counting rules) | `docs/research/test-plan.md`, `docs/how-it-works.md` |
+| `src/mantelet/sface_copy.py`, `scripts/check_sface_copy.py`, the `ml` extra | `docs/development/setup.md`, `docs/research/test-plan.md`, `docs/development/architecture.md`, `research/claims-ledger.md`, `CHANGELOG.md` |
+| `src/mantelet/protect.py`, `diffjpeg.py`, `protectcheck.py`, `budgetsweep.py`, `effect.py`, `scripts/check_protection.py`, `scripts/run_budget_sweep.py` (the first protection, its checks and sweep, the effect rule) | `docs/development/setup.md`, `docs/research/test-plan.md`, `docs/development/architecture.md`, `research/claims-ledger.md`, `docs/limits.md`, `docs/how-it-works.md`, `docs/glossary.md`, `CHANGELOG.md` |
+| `src/mantelet/budgetgraph.py` (budget graph) | `docs/development/architecture.md`, `docs/research/test-plan.md`, `CHANGELOG.md` |
 | `src/mantelet/image.py` and `cropsweep.py` (pipeline, crop positions) | `docs/research/test-plan.md`, `docs/development/architecture.md`, `research/claims-ledger.md` |
 | `scripts/check_gpu.py`, the `ml` extra in `pyproject.toml` | `docs/development/setup.md`, `research/compute-options.md`, `research/claims-ledger.md` |
 | `src/mantelet/attacks.py`, `toy.py` and `redteam.py` (attacks, toy protections, quality floor, survival) | `docs/research/test-plan.md`, `docs/research/threat-model.md`, `research/claims-ledger.md`, `docs/how-it-works.md`, `docs/glossary.md` |

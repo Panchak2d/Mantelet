@@ -2,7 +2,7 @@
 
 Reader: a researcher who wants the list of sources and how far each has been checked.
 
-Last reviewed: 21 October 2026
+Last reviewed: 23 October 2026
 
 Every entry below was checked against the real source. The arXiv ID, authors, title, and year were confirmed. Where the project plan listed something differently, the note column says so. We have not repeated the work in any paper. Until we do, their results are labelled Reported in the [claims ledger](claims-ledger.md).
 
@@ -75,3 +75,8 @@ The newer protection papers report their own results. Until we repeat their work
 | Gwenaël Doërr and Jean-Luc Dugelay, Security Pitfalls of Frame-by-Frame Approaches to Video Watermarking, IEEE Transactions on Signal Processing, 2004 (eurecom.edu/publication/1400) | The collusion attack and claim C-030 | 21 October 2026 |
 | Wikipedia, Peak signal-to-noise ratio | The 30 to 50 dB range in claim C-032. A general reference, not a primary source | 21 October 2026 |
 | OpenCV 4.x photo module documentation, `fastNlMeansDenoisingColored` (docs.opencv.org). The Python call was run in our own tests | The non-local means attack. The page text we read was cut off, so the parameters were confirmed by running the call | 21 October 2026 |
+| Low-Mid Adversarial Perturbation against Unauthorized Face Recognition System, arXiv 2206.09410 | Claim C-047. Search result excerpt only | 23 October 2026 |
+| TAFIM: Targeted Adversarial Attacks against Facial Image Manipulations, arXiv 2112.09151 | Claim C-047. Search result excerpt only | 23 October 2026 |
+| Attacking the Madry Defense Model with L1-based Adversarial Examples, arXiv 1710.10733 | The PGD settings in claim C-046. Search result excerpt only | 23 October 2026 |
+| Torchattacks: A PyTorch Repository for Adversarial Attacks, arXiv 2010.01950 | The PGD defaults in claim C-046. Search result excerpt only | 23 October 2026 |
+| OpenCV, `modules/objdetect/src/face_recognize.cpp` at commit 868787c (github.com/opencv/opencv) | The alignment in claim C-045. Read in full | 23 October 2026 |

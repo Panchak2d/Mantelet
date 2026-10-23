@@ -2,7 +2,7 @@
 
 Reader: a contributor or learner who wants to know what is in each folder.
 
-Last reviewed: 22 October 2026
+Last reviewed: 23 October 2026
 
 There is no protection code yet. The only machine learning models are the two face models used for measuring. The only protections are toys, made to test the attack tools. This page lists what exists today. It grows as the code grows.
 
@@ -18,8 +18,8 @@ There is no protection code yet. The only machine learning models are the two fa
 | `.github/` | Automatic checks and the forms for issues and pull requests |
 | `docs/` | The documents for readers and contributors |
 | `research/` | The claims ledger, the bibliography, and the register of datasets and models with their licences |
-| `scripts/` | Small tools that run from the command line: the docs checker, `check_gpu.py`, `demo_pipeline.py`, `fetch_models.py`, `run_baseline.py`, `run_redteam.py` and `make_report.py` |
-| `src/mantelet/` | The Python package. `image.py` loads, saves and changes images. `cropsweep.py` measures survival through the fixed pipeline at many crop positions. `metrics.py`, `faces.py`, `datasets.py`, `baseline.py` and `report.py` measure. `toy.py`, `attacks.py` and `redteam.py` are the red team |
+| `scripts/` | Small tools that run from the command line: the docs checker, `check_gpu.py`, `demo_pipeline.py`, `check_sface_copy.py`, `check_protection.py`, `diagnose_crop.py`, `run_budget_sweep.py`, `fetch_models.py`, `run_baseline.py`, `run_redteam.py` and `make_report.py` |
+| `src/mantelet/` | The Python package. `image.py` loads, saves and changes images. `cropsweep.py` measures survival through the fixed pipeline at many crop positions. `metrics.py`, `faces.py`, `datasets.py`, `baseline.py` and `report.py` measure. `sface_copy.py` builds a PyTorch copy of the SFace file and compares it with OpenCV. `protect.py` is the first protection, PGD through OpenCV's alignment, and `diffjpeg.py` is the differentiable JPEG it uses. They need the `ml` extra. `protectcheck.py` holds the limits for checking their pieces, `budgetsweep.py` runs a protection over a list of budgets, and `effect.py` judges the face match beside the unprotected photo. `budgetgraph.py` draws the perceptual budget graph as an SVG file with no plotting library. `toy.py`, `attacks.py` and `redteam.py` are the red team |
 | `data/`, `outputs/` | Created by you, never committed. Datasets and model files go in `data/`. Results go in `outputs/`. Git and the docs checker ignore both |
 | `tests/` | Automatic tests |
 
@@ -65,7 +65,7 @@ These files attack. `toy.py` makes three toy protections. Each adds a hidden pat
 
 `scripts/run_redteam.py` joins these together. It protects the photos itself and reads only datasets with the status `approved`, so it has no way to attack a photo that someone else protected. That is how [SAFETY.md](../../SAFETY.md) rule 7 is kept in the code. `report.py` also writes the red team report, and `make_report.py` picks the right report from the results file.
 
-A `Protection` declares its own `band`, or none. The known band attack is built from that band and left out when there is none. `run_redteam` can take a face model, which fills a `face_match` column for every admissible result, and an editor, which fills `edit_success`. No editor exists yet. It also writes survival through the fixed pipeline at many crop positions to `pipeline.csv`. Adding a real protection later means adding another `Protection` that declares its band or structure, and an attack for any structure that is not a band. The attacks that need a diffusion model are not here yet.
+A `Protection` declares its own `band`, or none. The known band attack is built from that band and left out when there is none. `run_redteam` can take a face model, which fills a `face_match` column for every admissible result, and an editor, which fills `edit_success`. No editor exists yet. It also writes survival through the fixed pipeline at many crop positions to `pipeline.csv`, with the face match and similarity after the pipeline, counted against the face in the unprotected original like every other face number. Adding a real protection later means adding another `Protection` that declares its band or structure, and an attack for any structure that is not a band. The attacks that need a diffusion model are not here yet.
 
 ## Automatic checks
 

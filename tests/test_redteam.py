@@ -253,17 +253,75 @@ def test_an_editor_is_run_on_every_admissible_result_and_the_attacker_wins_if_an
     assert "stand-in edit" in report.render_redteam_report(result)
 
 
+def protected_rows(result):
+    return [r for r in result["pipeline"] if r["protection"] != "none"]
+
+
 def test_the_pipeline_record_has_survival_at_many_crop_positions_and_the_centre_face_match():
     result = run(small_photos(), face_model=FaceFor({0, 1}))
-    assert len(result["pipeline"]) == 2
-    row = result["pipeline"][0]
+    assert len(protected_rows(result)) == 2
+    row = protected_rows(result)[0]
     assert row["worst"] <= row["centre"] and row["face_match"] is True
     pipe = redteam.summarise(result)[0]["pipeline"]
     assert pipe["photos"] == 2 and pipe["face_photos"] == 2
     assert "Corners on the 8 pixel grid" in report.render_redteam_report(result)
 
 
+class FaceOnlyAtFullSize:
+    """A stand-in model whose vector differs between the full photo and a cropped one."""
+
+    def __init__(self, size):
+        self.size = size
+
+    def embed(self, img):
+        return np.array([1.0, 0.0]) if img.size == self.size else np.array([0.0, 1.0])
+
+
+def test_the_pipeline_face_match_is_counted_against_the_unprotected_original():
+    photos = small_photos()
+    size = next(iter(photos.values())).size
+    result = run(photos, face_model=FaceOnlyAtFullSize(size))
+    assert all(r["original_face_found"] for r in result["records"])
+    assert all(
+        r["face_match"] is False and r["similarity"] == 0.0 for r in protected_rows(result)
+    )
+    assert redteam.summarise(result)[0]["pipeline"]["face_matched"] == 0
+
+
+def test_a_face_lost_in_the_pipeline_counts_as_no_match_with_no_similarity():
+    result = run(small_photos(1), face_model=OnlyTheFirstCall())
+    row = protected_rows(result)[0]
+    assert row["face_match"] is False and row["similarity"] is None
+
+
+def test_the_unprotected_photo_goes_through_the_same_pipeline_as_a_control_without_survival():
+    result = run(small_photos(), face_model=FaceFor({0, 1}))
+    control = [r for r in result["pipeline"] if r["protection"] == "none"]
+    assert [r["image"] for r in control] == [r["image"] for r in protected_rows(result)]
+    assert all(r["face_match"] is True and r["centre"] is None for r in control)
+    nothing = run(small_photos())
+    assert all(r["protection"] != "none" for r in nothing["pipeline"])
+
+
 def test_results_from_before_these_columns_still_render():
     result = run(small_photos())
     del result["pipeline"], result["meta"]["face_model"], result["meta"]["editor"]
     assert "Not measured in this run." in report.render_redteam_report(result)
+
+
+def test_a_run_of_a_real_protection_does_not_call_itself_a_toy_run_and_shows_its_band():
+    result = run(small_photos(), face_model=FaceFor({0, 1}))
+    result["meta"]["subject"] = "pgd"
+    result["meta"]["calibration"] = {
+        "kind": "pgd",
+        "calibration_photos": 8,
+        "calibration_budget": 8,
+        "band": [0.5, 3.0],
+        "band_energy_share": 0.61,
+    }
+    text = report.render_redteam_report(result)
+    assert "Every protection in this run is a toy" not in text
+    assert "tuned against a PyTorch copy of SFace" in text
+    assert "Declared band: Gaussian sigmas 0.5 and 3 pixels" in text
+    assert "Face match beside the unprotected photo" in text
+    assert "Toy pattern strength" not in text

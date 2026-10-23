@@ -2,7 +2,7 @@
 
     python scripts/fetch_models.py
     python scripts/run_baseline.py --dataset-id facesynthetics \\
-        --source data/facesynthetics/dataset_100.zip
+        --source data/dataset_100.zip
 
 No protection is applied. The run shows what ordinary photo processing does to
 the pixels and to a face match. The dataset must be in the register

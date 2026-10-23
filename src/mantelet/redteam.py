@@ -36,7 +36,7 @@ import numpy as np
 from PIL import Image
 
 from mantelet import attacks as attack_tools
-from mantelet import baseline, cropsweep, faces, image, metrics, toy
+from mantelet import baseline, cropsweep, effect, faces, image, metrics, toy
 
 QUALITY_FLOOR_PSNR = 30.0
 QUALITY_FLOOR_SSIM = 0.90
@@ -70,6 +70,7 @@ PIPELINE_FIELDS = (
     "aligned",
     "worst",
     "face_match",
+    "similarity",
 )
 
 
@@ -107,11 +108,11 @@ def is_admissible(psnr: float, ssim: float | None) -> bool:
     return psnr >= QUALITY_FLOOR_PSNR and ssim is not None and ssim >= QUALITY_FLOOR_SSIM
 
 
-def _seed(*parts: int) -> int:
+def seed_for(*parts: int) -> int:
     return int(np.random.SeedSequence(list(parts)).generate_state(1)[0])
 
 
-def _finite(value: float | None) -> float | None:
+def finite(value: float | None) -> float | None:
     return value if value is not None and math.isfinite(value) else None
 
 
@@ -142,7 +143,7 @@ def _all_attacks(protections: Sequence[toy.Protection]) -> list[attack_tools.Att
     return list(seen.values())
 
 
-def _load_photos(
+def load_photos(
     names: Sequence[str], load: Callable[[str], Image.Image]
 ) -> tuple[list[tuple[int, str, Image.Image]], list[dict]]:
     kept, skipped = [], []
@@ -180,35 +181,39 @@ def run_redteam(
     """
     if len(names) > MAX_IMAGES:
         raise ValueError(f"at most {MAX_IMAGES} photos per run, got {len(names)}")
-    photos, skipped = _load_photos(names, load)
+    photos, skipped = load_photos(names, load)
     original_faces = {
         name: face_model.embed(photo) if face_model is not None else None
         for _, name, photo in photos
     }
     records: list[dict] = []
     pipeline: list[dict] = []
+    if face_model is not None:
+        pipeline.extend(control_rows(photos, original_faces, face_model, seed))
     not_applicable: dict[tuple[str, str], dict] = {}
     for protection_index, protection in enumerate(protections):
         protected = [
-            protection.apply(photo, _seed(seed, index, protection_index))
+            protection.apply(photo, seed_for(seed, index, protection_index))
             for index, _, photo in photos
         ]
         attacks = attack_catalogue(protected, protection.band)
         for (index, name, original), shielded in zip(photos, protected, strict=True):
             pipeline.append(
-                _pipeline_record(
+                pipeline_record(
                     name,
                     protection.name,
                     original,
                     shielded,
                     face_model,
                     original_faces[name],
-                    _seed(seed, index, protection_index, 99),
+                    seed_for(seed, index, protection_index, 99),
                 )
             )
             for attack_index, attack in enumerate(attacks):
                 for strength_index, strength in enumerate(attack.strengths):
-                    attack_seed = _seed(seed, index, protection_index, attack_index, strength_index)
+                    attack_seed = seed_for(
+                        seed, index, protection_index, attack_index, strength_index
+                    )
                     try:
                         attacked = attack.run(shielded, strength, attack_seed)
                     except attack_tools.AttackNotApplicable as error:
@@ -300,38 +305,73 @@ def _record(
         "attack": attack.name,
         "level": attack.level,
         "strength": float(strength),
-        "psnr": _finite(psnr),
+        "psnr": finite(psnr),
         "ssim": ssim,
         "admissible": admissible,
-        "survival": _finite(survival(original, shielded, attacked)),
+        "survival": finite(survival(original, shielded, attacked)),
         "original_face_found": original_found,
-        "similarity": _finite(similarity),
+        "similarity": finite(similarity),
         "face_match": face_match,
         "edit_success": edit_success,
     }
 
 
-def _pipeline_record(name, protection, original, shielded, face_model, original_vector, seed):
-    """Survival through the fixed pipeline at many crop corners, and the centre face match."""
-    sweep = cropsweep.sweep(original, shielded, seed)
-    face_match = None
+def control_rows(photos, original_faces: dict, face_model, seed: int) -> list[dict]:
+    """The unprotected photo through the same pipeline code, one row per photo.
+
+    These rows have no survival, since nothing changed. They are the baseline that the
+    face match of a protected photo is judged against (``effect``).
+    """
+    return [
+        pipeline_record(
+            name,
+            effect.CONTROL_NAME,
+            original,
+            original,
+            face_model,
+            original_faces[name],
+            seed_for(seed, index, 98),
+            measure_survival=False,
+        )
+        for index, name, original in photos
+    ]
+
+
+def pipeline_record(
+    name,
+    protection,
+    original,
+    shielded,
+    face_model,
+    original_vector,
+    seed,
+    measure_survival=True,
+):
+    """Survival through the fixed pipeline at many crop corners, and the centre face match.
+
+    With ``measure_survival`` false the survival columns stay empty. The unprotected
+    control uses that, since it has no change to survive.
+    """
+    sweep = cropsweep.sweep(original, shielded, seed) if measure_survival else {}
+    similarity, face_match = None, None
     if face_model is not None and original_vector is not None:
-        centre = image.platform_pipeline(shielded)
-        reference = face_model.embed(image.platform_pipeline(original))
-        face_match = False if reference is None else _match(face_model, reference, centre)[1]
+        similarity, face_match = _match(
+            face_model, original_vector, image.platform_pipeline(shielded)
+        )
     return {
         "image": name,
         "protection": protection,
-        "centre": _mean_of(sweep["centre"]),
-        "random": _mean_of(sweep["random"]),
-        "aligned": _mean_of(sweep["aligned"]),
-        "worst": _finite(sweep["worst"]),
+        "centre": _mean_of(sweep.get("centre")),
+        "random": _mean_of(sweep.get("random")),
+        "aligned": _mean_of(sweep.get("aligned")),
+        "worst": finite(sweep.get("worst")),
         "face_match": face_match,
+        "similarity": finite(similarity),
     }
 
 
 def _mean_of(summary: dict | None) -> float | None:
-    return None if summary is None else _finite(summary["mean"])
+    return None if summary is None else finite(summary["mean"])
 
 
 def _best_per_photo(rows: list[dict]) -> dict[str, float]:
@@ -473,10 +513,11 @@ def write_pipeline_csv(rows: Sequence[dict], path: str | Path) -> None:
         writer.writerows(rows)
 
 
-def build_meta(dataset: dict, sampled: int) -> dict:
+def build_meta(dataset: dict, sampled: int, subject: str = "toys") -> dict:
     """Facts that let someone repeat the run: the dataset, tools and fixed numbers."""
     return {
         "created": datetime.now(UTC).isoformat(timespec="seconds"),
+        "subject": subject,
         "dataset": dataset,
         "photos_sampled": sampled,
         "libraries": baseline.library_versions(),

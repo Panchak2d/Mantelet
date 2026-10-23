@@ -2,7 +2,7 @@
 
 Reader: a beginner who wants to run the project on an EndeavourOS laptop (Arch-based Linux). You need a terminal and basic comfort typing commands.
 
-Last reviewed: 22 October 2026
+Last reviewed: 23 October 2026
 
 This page gets the project running on the CPU. The graphics card is not used. We have not yet tested these steps on EndeavourOS itself. If a step fails, open a [documentation issue](https://github.com/Panchak2d/mantelet/issues/new/choose) and say which step.
 
@@ -78,9 +78,47 @@ The red team tries to undo toy protections. A toy adds a hidden pattern and does
 python scripts/run_redteam.py --dataset-id facesynthetics --source data/dataset_100.zip --count 20
 ```
 
-Each photo is protected by the script itself. The script never reads a photo that someone else protected. A 512 pixel photo takes about 50 seconds on a laptop CPU for all three toys, plus about 2 seconds for the crop position test, so 20 photos take around 18 minutes. The results, two CSV files and a report are written to `outputs/redteam-facesynthetics-seed0/`. `records.csv` has one row per attack and `pipeline.csv` has the survival through the fixed pipeline at many crop positions. To rebuild the report from a results file, run `python scripts/make_report.py` on its `results.json`, as for the baseline.
+Each photo is protected by the script itself. The script never reads a photo that someone else protected. A 512 pixel photo takes about 50 seconds on a laptop CPU for all three toys, plus about 2 seconds for the crop position test, so 20 photos take around 17 minutes. The owner's run took 16 minutes 34 seconds. The results, two CSV files and a report are written to `outputs/redteam-facesynthetics-seed0/`. `records.csv` has one row per attack and `pipeline.csv` has the survival through the fixed pipeline at many crop positions. To rebuild the report from a results file, run `python scripts/make_report.py` on its `results.json`, as for the baseline.
 
-To add the face match, run `python scripts/fetch_models.py` first and add `--models-dir data/models`. Every attacked photo that stays above the quality floor is then matched against the face in the unprotected original. This adds a few minutes. Without it the face match columns stay empty and the report says so. The edit success column stays empty in every run until an editing model is built.
+To add the face match, run `python scripts/fetch_models.py` first and add `--models-dir data/models`. Every attacked photo that stays above the quality floor is then matched against the face in the unprotected original. This adds several minutes. The owner's run of 20 photos with the face match took 25 minutes. Without it the face match columns stay empty and the report says so. The edit success column stays empty in every run until an editing model is built.
+
+## Check the PyTorch copy of SFace (optional)
+
+A protection that is tuned with gradients needs a model PyTorch can differentiate. The face match in the red team runs the SFace file through OpenCV, so before anything is tuned we check that a PyTorch copy of SFace gives the same face vectors as OpenCV. Install the extra, then run the check on the photos you already approved:
+
+```text
+uv sync --extra dev --extra ml
+python scripts/check_sface_copy.py --dataset-id facesynthetics \
+    --source data/dataset_100.zip --models-dir data/models
+```
+
+The script finds and aligns a face in 20 sampled photos, gets one vector from OpenCV and one from the copy, and writes `sface-copy.md` and `sface-copy.json` to `outputs/sface-copy-facesynthetics-seed0/`. It exits with 0 on a pass, 2 on a fail and 1 when something could not run. The limits are in the [test plan](../research/test-plan.md). The PyPI wheel of PyTorch works on the CPU, and it is large because it carries the CUDA libraries. If the conversion step stops on an operation `onnx2torch` does not know, send the message. Nothing has run this script against the real SFace file yet.
+
+## Check, sweep and attack a PGD protection (optional)
+
+The first protection is projected gradient descent against the PyTorch copy of SFace. It needs the `ml` extra, the model files, an approved dataset and a passed copy check. The commands are for fish. Each one stops the chain if it fails:
+
+```fish
+cd mantelet
+uv sync --extra dev --extra ml
+source .venv/bin/activate.fish
+uv run python scripts/check_protection.py --dataset-id facesynthetics \
+    --source data/dataset_100.zip --models-dir data/models
+and uv run python scripts/run_budget_sweep.py --dataset-id facesynthetics \
+    --source data/dataset_100.zip --models-dir data/models
+```
+
+`check_protection.py` checks our crop, the gradient and our JPEG against the limits in the [test plan](../research/test-plan.md) and writes `protection-check.md`. It exits with 2 when a limit is missed. If the crop limit is missed, `uv run python scripts/diagnose_crop.py` with the same arguments prints, for each face, how far the copy's vector moves when it is fed OpenCV's crop, our crop, our crop without rounding, and OpenCV's own warp with our matrix. It changes nothing. `run_budget_sweep.py` protects the 20 sampled photos at each budget, for both `pgd` and `pgd-jpeg`, measures PSNR, SSIM, survival and the face match beside the unprotected photo, and writes `sweep.json`, `sweep-rows.csv` and one graph per kind (`budget-pgd.svg`, `budget-pgd-jpeg.svg`) to `outputs/sweep-facesynthetics-seed0/`. It declares each band on 8 photos kept apart from the 20. It prints how many seconds each kind took. Nobody has timed it on a laptop CPU yet.
+
+Then attack one protection at the budget the sweep reports as `gate_budget` in `sweep.json`:
+
+```fish
+uv run python scripts/run_redteam.py --dataset-id facesynthetics \
+    --source data/dataset_100.zip --models-dir data/models \
+    --protection pgd --budget 8
+```
+
+The report adds the face match beside the unprotected photo, with the three states, and the declared band. Open the graphs in a browser to look at them.
 
 ## Pinned versions
 
@@ -90,7 +128,7 @@ To add the face match, run `python scripts/fetch_models.py` first and add `--mod
 | Pillow | 12.3 or newer in the 12 series | Releases before 12.1.1 have a known memory corruption bug when opening crafted image files, and 12.2.0 and 12.3.0 fix more. Checked 8 October 2026 against the Pillow release notes |
 | NumPy | 2.2 or newer, below 2.6 | Tests pass on 2.4.4 and 2.5.3 |
 | OpenCV (`opencv-python-headless`) | 4.14.0.94 or newer in the 4 series | Runs the face detector and recogniser. Version 5.0.0.93 exists. The OpenCV Zoo says the version 5 engine handles the fixed-size detector file differently, and we have not tested it. Checked 9 October 2026 on PyPI |
-| PyTorch (extra `ml`) | 2.14, below 2.15 | Optional. Install with `pip install -e ".[ml]"`. Version 2.14 is the last release with a CUDA 12.x build, which is the only one that covers a Pascal card (claim C-004). The newest 2.14 release on PyPI was 2.14.1 when checked on 22 October 2026. Nothing imports it yet |
+| PyTorch (extra `ml`) | 2.14, below 2.15 | Optional. Install with `uv sync --extra dev --extra ml`. Keep `--extra dev`, because `uv sync` removes anything not listed. Version 2.14 is the last release with a CUDA 12.x build, which is the only one that covers a Pascal card (claim C-004). The newest 2.14 release on PyPI was 2.14.1 when checked on 22 October 2026. The copy check, the protection checks and the PGD protections import it, together with `onnx2torch` 1.5 from the same extra |
 | pytest | 9.1.1 or newer in the 9 series | Current when checked |
 | ruff | 0.16.10 or newer in the 0.16 series | Current when checked |
 | uv | whatever `pacman` gives you | Arch lists `uv` in its extra repository |
