@@ -1,11 +1,7 @@
-from datetime import date
-
 import check_docs
-import pytest
 
 LONG_DASH = "\u2014"
 EN_DASH = "\u2013"
-HEADER = "Reader: a test reader.\nLast reviewed: 4 October 2026\n"
 
 
 def messages(problems):
@@ -82,35 +78,6 @@ def test_link_starting_with_slash_is_checked_from_repo_root(tmp_path):
     assert check_docs.check_links("[a](/docs/a.md)", page, tmp_path) == []
 
 
-def test_header_with_reader_and_current_review_passes():
-    assert check_docs.check_header(HEADER, today=date(2026, 10, 5)) == []
-
-
-def test_missing_reader_line_is_reported():
-    text = "Last reviewed: 4 October 2026\n"
-    assert messages(check_docs.check_header(text)) == ["no 'Reader:' line in the first 12 lines"]
-
-
-def test_missing_last_reviewed_line_is_reported():
-    problems = check_docs.check_header("Reader: someone.\n")
-    assert "no 'Last reviewed" in problems[0][1]
-
-
-@pytest.mark.parametrize(
-    "line", ["Last reviewed: 31 February 2026", "Last reviewed: 4 Octember 2026"]
-)
-def test_impossible_review_date_is_reported(line):
-    problems = check_docs.check_header("Reader: someone.\n" + line + "\n")
-    assert "is not a real date" in problems[0][1]
-
-
-def test_review_date_in_the_future_is_reported_but_tomorrow_is_allowed():
-    text = "Reader: someone.\nLast reviewed: 7 October 2026\n"
-    assert check_docs.check_header(text, today=date(2026, 10, 6)) == []
-    problems = check_docs.check_header(text, today=date(2026, 10, 5))
-    assert "is in the future" in problems[0][1]
-
-
 def test_syllable_counts_for_simple_words():
     assert check_docs.count_syllables("cat") == 1
     assert check_docs.count_syllables("photo") == 2
@@ -136,13 +103,8 @@ def test_reading_grade_ignores_code_blocks_and_headings():
     assert check_docs.reading_grade(plain) == check_docs.reading_grade("We see a cat.\n")
 
 
-def test_github_templates_do_not_need_a_header():
-    assert not check_docs.needs_header(".github/PULL_REQUEST_TEMPLATE.md")
-    assert check_docs.needs_header("docs/index.md")
-
-
 def test_clean_repo_passes_and_returns_zero(tmp_path, capsys):
-    (tmp_path / "README.md").write_text(HEADER + "\nWe make a cat.\n", encoding="utf-8")
+    (tmp_path / "README.md").write_text("We make a cat.\n", encoding="utf-8")
     assert check_docs.main(tmp_path) == 0
     assert "No problems found" in capsys.readouterr().out
 
@@ -150,23 +112,23 @@ def test_clean_repo_passes_and_returns_zero(tmp_path, capsys):
 def test_repo_with_a_problem_returns_one_and_names_the_file(tmp_path, capsys):
     page = tmp_path / "docs" / "page.md"
     page.parent.mkdir()
-    page.write_text(HEADER + "\nWe leverage it.\n", encoding="utf-8")
+    page.write_text("We leverage it.\n", encoding="utf-8")
     assert check_docs.main(tmp_path) == 1
-    assert "docs/page.md:4: banned phrase: 'leverage'" in capsys.readouterr().out
+    assert "docs/page.md:1: banned phrase: 'leverage'" in capsys.readouterr().out
 
 
 def test_style_guide_and_bibliography_may_list_banned_phrases(tmp_path):
     for name in ("docs/development/style-guide.md", "research/bibliography.md"):
         page = tmp_path / name
         page.parent.mkdir(parents=True, exist_ok=True)
-        page.write_text(HEADER + "\nAvoid leverage.\n", encoding="utf-8")
+        page.write_text("Avoid leverage.\n", encoding="utf-8")
     assert check_docs.check_repo(tmp_path) == []
 
 
 def test_hidden_and_environment_folders_are_skipped(tmp_path):
     hidden = tmp_path / ".venv" / "lib"
     hidden.mkdir(parents=True)
-    (hidden / "x.md").write_text("no header here", encoding="utf-8")
+    (hidden / "x.md").write_text("We leverage it.", encoding="utf-8")
     assert check_docs.find_markdown_files(tmp_path) == []
 
 
@@ -174,5 +136,26 @@ def test_generated_data_and_output_folders_are_skipped(tmp_path):
     for folder in ("data", "outputs"):
         generated = tmp_path / folder / "run"
         generated.mkdir(parents=True)
-        (generated / "report.md").write_text("no header here", encoding="utf-8")
+        (generated / "report.md").write_text("We leverage it.", encoding="utf-8")
     assert check_docs.find_markdown_files(tmp_path) == []
+
+
+HARD_TEXT = (
+    "Adversarial perturbation robustness evaluation necessitates comprehensive "
+    "consideration of transformation-invariant optimization methodologies.\n"
+)
+
+
+def test_page_without_any_header_lines_passes(tmp_path):
+    (tmp_path / "README.md").write_text("# Title\n\nWe make a cat.\n", encoding="utf-8")
+    assert check_docs.check_repo(tmp_path) == []
+
+
+def test_reading_grade_cap_applies_to_the_help_guide_only(tmp_path):
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "docs" / "get-help.md").write_text(HARD_TEXT, encoding="utf-8")
+    (tmp_path / "docs" / "background.md").write_text(HARD_TEXT, encoding="utf-8")
+    (tmp_path / "README.md").write_text(HARD_TEXT, encoding="utf-8")
+    problems = check_docs.check_repo(tmp_path)
+    assert len(problems) == 1
+    assert problems[0].startswith("docs/get-help.md:1: reading grade")

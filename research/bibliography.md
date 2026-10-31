@@ -1,9 +1,5 @@
 # Bibliography
 
-Reader: a researcher who wants the list of sources and how far each has been checked.
-
-Last reviewed: 23 October 2026
-
 Every entry below was checked against the real source. The arXiv ID, authors, title, and year were confirmed. Where the project plan listed something differently, the note column says so. We have not repeated the work in any paper. Until we do, their results are labelled Reported in the [claims ledger](claims-ledger.md).
 
 ## Protection research

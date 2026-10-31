@@ -1,9 +1,5 @@
 # Docs sync map
 
-Reader: anyone changing code, settings, or documents in this project.
-
-Last reviewed: 23 October 2026
-
 Documents must never fall behind the project. When you change something in the left column, check every document in the right column. If one describes something you changed, update it in the same change. If none needs updating, say so in your pull request or patch notes and say why.
 
 ## Map
@@ -14,9 +10,11 @@ Documents must never fall behind the project. When you change something in the l
 | Test, metric, or threshold | `docs/research/`, `research/claims-ledger.md`, `docs/limits.md` |
 | Experiment result | `research/claims-ledger.md`, `docs/research/topics.md`, `docs/how-it-works.md`, `docs/limits.md` |
 | Dependency or tool version | `docs/development/setup.md`, `pyproject.toml` |
-| Safety or ethics rule | `SAFETY.md`, `CONTRIBUTING.md`, `docs/start-here.md` |
+| Safety or ethics rule | `SAFETY.md`, `CONTRIBUTING.md`, `docs/background.md` |
 | Folder structure | `docs/development/architecture.md`, `README.md` |
-| Law, hotline, or takedown process | `docs/for-families.md`, the relevant guide |
+| Law, hotline, or takedown process | `docs/get-help.md` (and its sources table), `docs/background.md` |
+| A figure or fact in the background | `docs/background.md`, `README.md` |
+| A figure from a Gate 1, 2 or 3 run | `docs/research/results.md`, `research/claims-ledger.md` |
 
 ## Code areas
 

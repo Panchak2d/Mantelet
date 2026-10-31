@@ -1,9 +1,5 @@
 # Code of conduct
 
-Reader: everyone who takes part in this project, in issues, pull requests, and discussions.
-
-Last reviewed: 5 October 2026
-
 This project deals with a painful subject. People who join may have been hurt by it. We ask everyone to be kind, careful, and clear.
 
 ## What we expect

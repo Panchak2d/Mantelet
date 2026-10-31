@@ -1,10 +1,6 @@
 # Threat model
 
-Reader: a researcher or contributor who wants to know who we defend against and what we try to stop.
-
-Last reviewed: 22 October 2026
-
-This page writes down who might attack, what they can do, and what we are trying to stop. The research plan fixes the threats and the attacker levels. This page explains them in full.
+This page writes down who might attack, what they can do, and what we are trying to stop. We write it before any experiment so that a result cannot change what counts as an attacker. A protection that only works against an attacker who knows nothing gives a false sense of safety, and this page is how we avoid that. The research plan fixes the threats and the attacker levels. This page explains them in full.
 
 ## What we try to stop
 

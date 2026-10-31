@@ -1,9 +1,5 @@
 # Security policy
 
-Reader: anyone who found a security problem in this project's code or repository settings.
-
-Last reviewed: 5 October 2026
-
 ## What counts as a security problem
 
 A flaw in the code, the build files, or the repository settings that could let someone do harm. Examples are a leaked key, a file that runs unsafe code, or a dependency with a known weakness.

@@ -1,9 +1,5 @@
 # Changelog
 
-Reader: someone using or following Mantelet who wants to know what changed.
-
-Last reviewed: 23 October 2026
-
 This file lists changes a user would notice.
 
 ## 0.0.1 (not released)

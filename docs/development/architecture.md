@@ -1,9 +1,5 @@
 # Architecture
 
-Reader: a contributor or learner who wants to know what is in each folder.
-
-Last reviewed: 23 October 2026
-
 There is no protection code yet. The only machine learning models are the two face models used for measuring. The only protections are toys, made to test the attack tools. This page lists what exists today. It grows as the code grows.
 
 ## Folders
@@ -27,7 +23,7 @@ There is no protection code yet. The only machine learning models are the two fa
 
 `scripts/check_docs.py` reads every Markdown file and runs a list of small checks on its text. Each check is one function. It takes the text and returns a list of problems. The function `check_file` runs all the checks on one file, and `main` runs it on every file and prints the result.
 
-It also checks that the "Last reviewed" date is a real date and is not in the future. It skips the `data/` and `outputs/` folders, where generated reports go. Tests for it are in `tests/test_check_docs.py`.
+It holds only `docs/get-help.md` to a reading grade limit. It skips the `data/` and `outputs/` folders, where generated reports go. Tests for it are in `tests/test_check_docs.py`.
 
 ## The image toolkit
 

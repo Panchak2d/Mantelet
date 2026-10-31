@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360" font-family="sans-serif" font-size="12" role="img" aria-label="Mean survival of toy protections after toy red team attacks">
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="64" y="22" font-size="14" fill="#222222">Mean survival after attack, toy protections on 20 synthetic faces</text>
+<text x="64" y="38" font-size="11" fill="#222222">Toy protections do nothing against any model. This is not a Mantelet protection result.</text>
+<line x1="64" y1="276.0" x2="616" y2="276.0" stroke="#d9d9d9"/>
+<text x="56" y="280.0" text-anchor="end" fill="#222222">0.00</text>
+<line x1="64" y1="219.0" x2="616" y2="219.0" stroke="#d9d9d9"/>
+<text x="56" y="223.0" text-anchor="end" fill="#222222">0.25</text>
+<line x1="64" y1="162.0" x2="616" y2="162.0" stroke="#d9d9d9"/>
+<text x="56" y="166.0" text-anchor="end" fill="#222222">0.50</text>
+<line x1="64" y1="105.0" x2="616" y2="105.0" stroke="#d9d9d9"/>
+<text x="56" y="109.0" text-anchor="end" fill="#222222">0.75</text>
+<line x1="64" y1="48.0" x2="616" y2="48.0" stroke="#d9d9d9"/>
+<text x="56" y="52.0" text-anchor="end" fill="#222222">1.00</text>
+<rect x="98.5" y="263.2" width="69.0" height="12.8" fill="#1f5fa8"/>
+<text x="133.0" y="257.2" text-anchor="middle" fill="#222222">0.056</text>
+<text x="133.0" y="294" text-anchor="middle" fill="#222222">Fine grain,</text>
+<text x="133.0" y="308" text-anchor="middle" fill="#222222">cleanup filters</text>
+<rect x="236.5" y="273.9" width="69.0" height="2.1" fill="#1f5fa8"/>
+<text x="271.0" y="267.9" text-anchor="middle" fill="#222222">0.009</text>
+<text x="271.0" y="294" text-anchor="middle" fill="#222222">Shared pattern,</text>
+<text x="271.0" y="308" text-anchor="middle" fill="#222222">collusion attack</text>
+<rect x="374.5" y="56.4" width="69.0" height="219.6" fill="#1f5fa8"/>
+<text x="409.0" y="50.4" text-anchor="middle" fill="#222222">0.963</text>
+<text x="409.0" y="294" text-anchor="middle" fill="#222222">Per-photo pattern,</text>
+<text x="409.0" y="308" text-anchor="middle" fill="#222222">collusion attack</text>
+<rect x="512.5" y="170.0" width="69.0" height="106.0" fill="#1f5fa8"/>
+<text x="547.0" y="164.0" text-anchor="middle" fill="#222222">0.465</text>
+<text x="547.0" y="294" text-anchor="middle" fill="#222222">Per-photo pattern,</text>
+<text x="547.0" y="308" text-anchor="middle" fill="#222222">non-local means</text>
+<line x1="64" y1="162.0" x2="616" y2="162.0" stroke="#b3261e" stroke-dasharray="6 4"/>
+<text x="616" y="157.0" text-anchor="end" fill="#b3261e">50 percent pass number</text>
+</svg>

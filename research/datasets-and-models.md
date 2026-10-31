@@ -1,9 +1,5 @@
 # Datasets and models
 
-Reader: a researcher or contributor who wants to know which data and models we may use, under which licence, and what we do not know about them.
-
-Last reviewed: 9 October 2026
-
 [SAFETY.md](../SAFETY.md) rule 4 says every dataset and model has its licence recorded before anyone uses it. This page is that record. The code enforces it: an experiment only runs on a dataset that is in `src/mantelet/datasets.py` with the status `approved`. Nothing listed here is stored in the repository. Datasets go in a `data/` folder and model files go in `data/models/`. Git ignores both.
 
 ## What a dataset must pass

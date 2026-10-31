@@ -11,12 +11,11 @@ A problem is a pair: (line number, message).
 
 import re
 import sys
-from datetime import date, timedelta
 from pathlib import Path
 
 MAX_READING_GRADE = 8.0
 
-FAMILY_PAGES = {"README.md", "docs/start-here.md", "docs/for-families.md"}
+READING_LEVEL_PAGES = {"docs/get-help.md"}
 SKIPPED_FOLDERS = {
     ".git",
     ".venv",
@@ -58,13 +57,6 @@ EMOJI_RANGES = [
 ]
 
 LINK_PATTERN = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)")
-REVIEWED_PATTERN = re.compile(r"^Last reviewed: (\d{1,2}) ([A-Za-z]+) (\d{4})$")
-MONTHS = [
-    "january", "february", "march", "april", "may", "june",
-    "july", "august", "september", "october", "november", "december",
-]
-# Authors in time zones ahead of the build machine write tomorrow's date.
-FUTURE_DAYS_ALLOWED = 1
 
 
 def find_markdown_files(root):
@@ -88,13 +80,6 @@ def prose_lines(text):
         if not inside_code_block:
             lines.append((number, line))
     return lines
-
-
-def needs_header(relative_path):
-    """The GitHub templates do not need a header."""
-    if relative_path.startswith(".github/"):
-        return False
-    return True
 
 
 def check_dashes(text):
@@ -152,40 +137,6 @@ def check_links(text, file_path, root):
     return problems
 
 
-def parse_review_date(day, month, year):
-    """Return a date, or None if the words do not name a real day."""
-    if month.lower() not in MONTHS:
-        return None
-    try:
-        return date(int(year), MONTHS.index(month.lower()) + 1, int(day))
-    except ValueError:
-        return None
-
-
-def check_header(text, today=None):
-    problems = []
-    if today is None:
-        today = date.today()
-    top_lines = text.splitlines()[:12]
-    if not any(line.startswith("Reader:") for line in top_lines):
-        problems.append((1, "no 'Reader:' line in the first 12 lines"))
-
-    reviewed_match = False
-    for line in top_lines:
-        match = REVIEWED_PATTERN.match(line)
-        if not match:
-            continue
-        reviewed_match = True
-        reviewed = parse_review_date(*match.groups())
-        if reviewed is None:
-            problems.append((1, f"'{line}' is not a real date"))
-        elif reviewed > today + timedelta(days=FUTURE_DAYS_ALLOWED):
-            problems.append((1, f"'{line}' is in the future"))
-    if not reviewed_match:
-        problems.append((1, "no 'Last reviewed: D Month YYYY' line in the first 12 lines"))
-    return problems
-
-
 def count_syllables(word):
     """Estimate syllables by counting groups of vowels. It is rough, not exact."""
     word = word.lower()
@@ -200,7 +151,7 @@ def plain_sentences_text(text):
     pieces = []
     for _, line in prose_lines(text):
         line = line.strip()
-        if not line or line.startswith(("#", "|", "<!--", "Reader:", "Last reviewed:")):
+        if not line or line.startswith(("#", "|", "<!--")):
             continue
         line = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", line)
         line = line.replace("`", "").replace("*", "")
@@ -247,9 +198,7 @@ def check_file(path, root):
         problems.extend(check_banned_phrases(text))
     problems.extend(check_emoji(text))
     problems.extend(check_links(text, path, root))
-    if needs_header(relative_path):
-        problems.extend(check_header(text))
-    if relative_path in FAMILY_PAGES:
+    if relative_path in READING_LEVEL_PAGES:
         problems.extend(check_reading_level(text))
 
     return [f"{relative_path}:{number}: {message}" for number, message in sorted(problems)]

@@ -1,10 +1,6 @@
 # Data and ethics policy
 
-Reader: a researcher or contributor who wants to know what data we use, where it comes from, and the rules we follow.
-
-Last reviewed: 9 October 2026
-
-This page turns the safety rules in [SAFETY.md](../../SAFETY.md) into concrete rules for research data. The safety rules are hard and have no exceptions. This page explains how we follow them.
+This page turns the safety rules in [SAFETY.md](../../SAFETY.md) into concrete rules for research data. A project about fake nude images must not harm anyone while it studies them, so the rules are hard and have no exceptions. This page explains how we follow them and what we will not do.
 
 ## No images of people under 18
 

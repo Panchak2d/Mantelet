@@ -1,10 +1,6 @@
 # Research topics
 
-Reader: a researcher or contributor who wants to know what we have looked into, what the sources say, and where each answer is recorded.
-
-Last reviewed: 22 October 2026
-
-This page is a map. It does not repeat the evidence. Every claim lives in the [claims ledger](../../research/claims-ledger.md) with a label: Measured, Reported or Guess. Every paper and source is in the [bibliography](../../research/bibliography.md). When a topic gets a new result, update its row here in the same change.
+This page is a map of the evidence. It does not repeat the evidence. Every claim lives in the [claims ledger](../../research/claims-ledger.md) with a label: Measured, Reported or Guess. Every paper and source is in the [bibliography](../../research/bibliography.md). When a topic gets a new result, update its row here in the same change.
 
 ## What we have looked into
 
@@ -19,7 +15,7 @@ This page is a map. It does not repeat the evidence. Every claim lives in the [c
 | Test data and its licences | Which face datasets and models may we use, and under what terms? | Face Synthetics and DigiFace-1M allow non-commercial research only. Neither publisher states an age range for the faces, so the owner reviews a sample before approval | C-024, C-025, C-026, [datasets and models](../../research/datasets-and-models.md) | Reported. Our reading of a licence is not legal advice |
 | Pass and fail numbers | What counts as a protection that works? | The limits we fixed in the [test plan](test-plan.md) come from our own reasoning | C-013, C-014, C-015 | Guess. Not yet checked by our own study |
 | Diffusion models | How do the editing models work? | Background reading only: one paper, one explainer and one course. No claim depends on it yet | Bibliography "Diffusion models" | Background |
-| Takedown and reporting | Where can a person get an image removed? | NCMEC runs Take It Down for people under 18. StopNCII.org is for adults. Both use a hash, so the image itself is not sent | C-003, C-008, C-009, [for families](../for-families.md) | Reported |
+| Takedown and reporting | Where can a person get an image removed? | NCMEC runs Take It Down for images of people under 18. StopNCII.org is for adults and says it accepts fake images. Both use a hash, so the image itself is not sent. NCMEC's generative AI page says Take It Down covers images that are real or made with AI. The tool's own FAQ does not mention AI | C-003, C-008, C-009, [get help](../get-help.md) | Reported. The help guide lists its sources |
 | Research ethics | What rules protect people in our studies? | The Belmont Report sets three principles: respect for persons, beneficence and justice | C-007, [data and ethics](data-and-ethics.md) | Reported |
 | Provenance | What do content credentials prove? | The C2PA specification and the Content Authenticity Initiative both say credentials can be stripped | C-010 | Reported |
 | Honest statistics | Where can a reader learn to report results fairly? | Statistics Done Wrong and the Khan Academy statistics course exist and are free | C-011, C-012 | Reported |
@@ -27,7 +23,8 @@ This page is a map. It does not repeat the evidence. Every claim lives in the [c
 
 ## Not researched yet
 
-- Takedown rules outside the United States. Start from official government and hotline sites, not blogs.
+- Primary statute text for Canada's Bill C-16 and for India's criminal provisions. The help guide uses law-firm summaries and official releases and says so.
+- Section numbers for India's offences, and a count of US state laws.
 - Whether common editing models shrink a photo to about 512 pixels (C-018).
 - Whether a crop that lines up with the 8 pixel JPEG grid changes the result (C-021).
 - Official platform documents for the JPEG quality and size numbers (C-016, C-017). Today they come from forensic studies.

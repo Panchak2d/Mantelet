@@ -1,10 +1,17 @@
 # Test plan
 
-Reader: a researcher who wants to know exactly how we measure success and failure, and what numbers count as passing.
+This page is the pre-registration of the project. It fixes the pass and fail numbers before any experiment runs, so that a result cannot move the goalposts. The numbers below are chosen with written reasons. They will not change after we see results. If we change any of them later, we say so here and explain why.
 
-Last reviewed: 23 October 2026
+## What this page contains
 
-This page fixes the pass and fail numbers before any experiment runs. The plan as planned requires this. The numbers below are chosen with written reasons. They will not change after we see results. If we change any of them later, we say so here and explain why.
+- What we measure and the three main metrics.
+- The fixed numbers for visibility, effect and survival.
+- The processing pipelines that stand in for real sites.
+- The measuring tools, the red team and the toy protections.
+- The first protection, the way its effect is judged and how Gate 1 is decided.
+- The datasets, the attacker levels per experiment and the decision gates.
+
+Real results are on the [results page](results.md). That page stays empty of real protection results until a gate has run.
 
 ## Metrics
 
@@ -62,7 +69,7 @@ The numbers do not change: long side 512, crop 80 percent, JPEG 75. Only the pla
 
 Survival through the pipeline is measured like this. The ideal change is the protection's change (protected photo minus original) shrunk and cropped without JPEG, kept as decimal numbers. The actual change is the protected photo minus the original photo, both run through the pipeline at the same corner. Survival is how far the actual change lies along the ideal one. 1 means the pipeline removed nothing and 0 means it removed all of it. For each photo the report gives the centre, the mean over random corners, the mean over grid corners and the worst corner.
 
-The pass number of 50 percent is judged at the centre crop, as fixed above. The other corners are reported beside it and are never used to rescue a failure at the centre. If the centre passes and some corners fail, the report shows the gap and we say so. We do not move the number. This is the same rule as for the milder profile. We added the crop positions on 22 October 2026, before any protection result exists.
+The pass number of 50 percent is judged at the centre crop, as fixed above. The other corners are reported beside it and are never used to rescue a failure at the centre. If the centre passes and some corners fail, the report shows the gap and we say so. We do not move the number. This is the same rule as for the milder profile. We added the crop positions before any protection result exists.
 
 ## The milder second profile
 
@@ -76,7 +83,7 @@ The fixed pipeline is harsh on purpose. A second, milder profile shows what a ph
 
 Reason: the studies in claims C-016 and C-017 report Instagram shrinking only above 1080 pixels and Facebook quality factors up to 92. No study we found reports a crop (C-019).
 
-The milder profile is measured and reported next to the fixed pipeline. It does not replace it. The pass numbers above still apply to the fixed pipeline, and a result on the milder profile is never used to rescue a failure on the fixed one. We added this profile on 9 October 2026, before any protection result exists.
+The milder profile is measured and reported next to the fixed pipeline. It does not replace it. The pass numbers above still apply to the fixed pipeline, and a result on the milder profile is never used to rescue a failure on the fixed one. We added this profile before any protection result exists.
 
 ## The measuring tools
 
@@ -148,7 +155,7 @@ The attacker wins on a photo when any admissible result, up to the attacker leve
 
 **Survival.** For the toy protections we measure how much of the protection's own change is left. The change is the protected photo minus the original. Survival is how far the attacked photo sits from the original along that change. It is 1 when nothing was removed and 0 when all of it was. The pass number is the one fixed above: at least 50 percent must survive. Survival measures whether the change is still in the photo. It does not measure whether a model is still fooled. A real protection is judged by attacker success rate as well.
 
-**Quality floor.** An attacker needs a photo that still looks good. An attack result counts only when the attacked photo has a PSNR of at least 30 dB and an SSIM of at least 0.90 against the unprotected original. Reason: PSNR values for lossy image compression are reported between 30 and 50 dB (claim C-032), so 30 dB is the low end of ordinary compression damage. The SSIM number has no source. Both are a **Guess** until the human study calibrates them. We fixed them on 21 October 2026, before any protection result exists. A protected photo that is itself below the floor is left out of the survival numbers and counted, because it shows the protection is too visible and not that an attack worked.
+**Quality floor.** An attacker needs a photo that still looks good. An attack result counts only when the attacked photo has a PSNR of at least 30 dB and an SSIM of at least 0.90 against the unprotected original. Reason: PSNR values for lossy image compression are reported between 30 and 50 dB (claim C-032), so 30 dB is the low end of ordinary compression damage. The SSIM number has no source. Both are a **Guess** until the human study calibrates them. We fixed them before any protection result exists. A protected photo that is itself below the floor is left out of the survival numbers and counted, because it shows the protection is too visible and not that an attack worked.
 
 **Worst case.** For every photo the attacker keeps the admissible result with the lowest survival. This is generous to the attacker, because a real attacker cannot see the survival. We report it for each attacker level, meaning the best of all attacks up to that level. We do not average across attacks. If one attack works, that is the result.
 
@@ -166,7 +173,7 @@ The tests in `tests/test_attacks.py` and `tests/test_redteam.py` check these exp
 
 A protection is tuned against a PyTorch copy of SFace, and the red team judges it with the SFace file run through OpenCV. If the two disagree, a result on the copy says nothing about the red team's face match. `scripts/check_sface_copy.py` therefore compares the two on real aligned faces before any protection is tuned. OpenCV gives SFace an aligned 112 by 112 crop as RGB values from 0 to 255 with no mean and no scaling (claim C-042), and the copy takes the same input.
 
-Fixed on 22 October 2026, before any copy result exists, and a Guess until the first run:
+Fixed before any copy result exists, and a Guess until the first run:
 
 - At least 10 faces are found in the sampled photos.
 - For every face, the cosine between the OpenCV vector and the copy's vector is at least 0.999.
@@ -178,7 +185,7 @@ The reason: two float32 implementations of the same network agree far more close
 
 The first protection is projected gradient descent (PGD) against the PyTorch copy of SFace (`src/mantelet/protect.py`). It changes the pixels that feed the aligned face crop by at most a budget, a whole number of pixel values out of 255, so as to push the face vector of the crop away from the vector of the unprotected face. The real face model in the red team stays OpenCV's. A photo with no face found is left unchanged.
 
-Fixed on 23 October 2026, before any protection result exists. Every number is a Guess until a run tests it.
+Fixed before any protection result exists. Every number is a Guess until a run tests it.
 
 - **Alignment.** The change is tuned through the same alignment OpenCV uses: a similarity transform from the five landmarks to fixed target points, then a bilinear warp to 112 by 112 (claim C-045). Only pixels that reach the crop receive a gradient, so the change stays near the face.
 - **Settings.** 40 steps, step size one twentieth of the budget, a random start, one restart. Sources disagree on the defaults (claim C-046), so we followed the setting reported for the original method and did not tune it.
@@ -206,7 +213,7 @@ Survival says whether the change is still in the photo. The effect is the drop i
 
 ### The check of the pieces
 
-Before any protection is swept, `scripts/check_protection.py` checks three pieces on real faces: our crop against OpenCV's alignment, the gradient against a finite difference, and our JPEG against Pillow's. Fixed on 23 October 2026, before any result, and a Guess:
+Before any protection is swept, `scripts/check_protection.py` checks three pieces on real faces: our crop against OpenCV's alignment, the gradient against a finite difference, and our JPEG against Pillow's. Fixed before any result, and a Guess:
 
 - At least 10 faces. For every face, the cosine between OpenCV's vector for OpenCV's crop and the copy's vector for our crop is at least 0.999.
 - For 3 faces, the relative gap between autograd and a finite difference in float64 is at most 0.01.
@@ -214,7 +221,7 @@ Before any protection is swept, `scripts/check_protection.py` checks three piece
 
 If any limit is missed, no protection is swept until the piece is fixed.
 
-**First run, 23 October 2026 (owner's machine, 20 Face Synthetics faces).** The crop missed: the lowest cosine was 0.998911 against the limit of 0.999. The gradient met its limit (worst gap 1.12e-3) and the JPEG met its limit (mean gap 0.446). The cause is that OpenCV hands the recogniser a crop of whole pixel values, and our crop kept the smooth values. On made-up 512 pixel photos, rounding our crop cut its mean gap to OpenCV's from 0.142 to 0.012 pixel values, so the matrix and the interpolation agree (claim C-050, a Guess until the re-run). The crop now rounds the same way in the forward pass and lets the gradient pass straight through. The limits did not move. The check is run again, and `scripts/diagnose_crop.py` splits any further miss into matrix, interpolation and rounding.
+**First run (owner's machine, 20 Face Synthetics faces).** The crop missed: the lowest cosine was 0.998911 against the limit of 0.999. The gradient met its limit (worst gap 1.12e-3) and the JPEG met its limit (mean gap 0.446). The cause is that OpenCV hands the recogniser a crop of whole pixel values, and our crop kept the smooth values. On made-up 512 pixel photos, rounding our crop cut its mean gap to OpenCV's from 0.142 to 0.012 pixel values, so the matrix and the interpolation agree (claim C-050, a Guess until the re-run). The crop now rounds the same way in the forward pass and lets the gradient pass straight through. The limits did not move. The check is run again, and `scripts/diagnose_crop.py` splits any further miss into matrix, interpolation and rounding.
 
 ## The datasets
 

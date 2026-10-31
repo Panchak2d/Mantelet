@@ -1,9 +1,5 @@
 # Compute options
 
-Reader: the project owner and any contributor who plans a step that needs a GPU, and a researcher who wants to know where the experiments ran and under which terms.
-
-Last reviewed: 22 October 2026
-
 Steps 9 to 12 run diffusion editing models. The owner's laptop has an NVIDIA MX330 with about 2 GB of video memory, which cannot realistically run them (claim C-005). Those steps need an outside GPU: a free notebook service or a rented machine. This page records what each option allows, as far as we could read it. Terms change, so every row has a read date. Read the current terms again before the first run on a service.
 
 What we run on a GPU: protections tuned against open models, and harmless stand-in edits such as a recoloured shirt or a filled background patch. We never create nude or sexual images ([SAFETY.md](../SAFETY.md) rule 1). Some services ban "deepfakes" or adult content without defining the word. Our work is closer to defence research than to making fakes, but a service that scans for patterns could still flag a notebook that runs an image editing model. Whether a service would object is **Guess**. Where the terms are unclear, ask the service first or choose another one.

@@ -1,9 +1,5 @@
 # Style guide
 
-Reader: anyone who writes or edits a document in this project.
-
-Last reviewed: 5 October 2026
-
 These rules keep the documents easy to read and honest. The docs checker (`python scripts/check_docs.py`) enforces the ones a program can check. It cannot tell if writing sounds natural. Reading a page aloud and fixing the places where you stumble is part of the process.
 
 Plain-language guidance to read first: plainlanguage.gov.
@@ -11,7 +7,7 @@ Plain-language guidance to read first: plainlanguage.gov.
 ## Rules
 
 - Write for a smart reader who has never heard of machine learning.
-- Use short sentences. One idea each. Aim for about grade 8 reading level on family pages.
+- Use short sentences. One idea each. Aim for about grade 8 reading level on the help guide (`docs/get-help.md`), where the checker enforces it.
 - Say what something is before you name it. Explain every technical word the first time, and add it to the [glossary](../glossary.md).
 - Use no long dashes or en dashes. Use a full stop, a comma, a colon, or the word "and".
 - Use no emoji. Use few bold words. Write headings that say what the section answers.
@@ -27,21 +23,13 @@ The checker looks for these: delve, leverage, utilize, seamless, crucial, pivota
 
 Also avoid lists of exactly three adjectives. The checker cannot find these. Look for them when you read.
 
-## What every page must have
+## Page headers
 
-Near the top, two lines:
-
-```text
-Reader: who this page is for.
-
-Last reviewed: Step N, D Month YYYY
-```
-
-The checker flags a page if either line is missing, or if the review is more than 3 steps old.
+Pages carry no "Reader" or "Last reviewed" line. A page says what it is for in its first paragraph, in plain words. The help guide dates its facts in a sources table: each source has an "accessed" column, so a reader can see how old a fact is.
 
 ## Checker settings
 
-The reading level limit, the number of steps before a page counts as old, and the current step number are set at the top of `scripts/check_docs.py`. The current step number is changed once per step.
+The reading level limit and the list of pages it applies to are set at the top of `scripts/check_docs.py`. Only `docs/get-help.md` is held to the limit.
 
 ## Claims
 

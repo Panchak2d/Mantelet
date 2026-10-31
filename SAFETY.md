@@ -1,9 +1,5 @@
 # Safety rules
 
-Reader: every contributor and reviewer. Also anyone who wants to know what this project will never do.
-
-Last reviewed: 21 October 2026
-
 These rules have no exceptions. Reviewers check every change against them. If a rule blocks something you want to do, change the plan, not the rule.
 
 ## 1. No sexual or nude image generation

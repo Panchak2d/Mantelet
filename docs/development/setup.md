@@ -1,9 +1,5 @@
 # Setup on EndeavourOS
 
-Reader: a beginner who wants to run the project on an EndeavourOS laptop (Arch-based Linux). You need a terminal and basic comfort typing commands.
-
-Last reviewed: 23 October 2026
-
 This page gets the project running on the CPU. The graphics card is not used. We have not yet tested these steps on EndeavourOS itself. If a step fails, open a [documentation issue](https://github.com/Panchak2d/mantelet/issues/new/choose) and say which step.
 
 ## What you get

@@ -1,17 +1,36 @@
 # Research overview
 
-Reader: a researcher or contributor who wants to know what the research track is trying to do.
+This section holds the research design of Mantelet: what question we ask, why, what we measure, what result would count as success or failure, and how we keep ourselves honest. Start here, then read the pages in the list below.
 
-Last reviewed: 22 October 2026
+## Purpose
 
-This page is a short summary. The full research design is written in these pages:
+Fake nude images of real people are made from ordinary photos. Existing help acts after an image exists (see the [help guide](../get-help.md)). We want to know whether a photo can be changed before it is shared, in a way people cannot see, so that making a fake from it becomes much harder. The [background page](../background.md) explains the problem and the evidence for its size.
+
+## Why this needs careful research
+
+Earlier studies report that hidden photo changes often fail when an attacker tries to remove them, or after resizing and JPEG compression. A tool that quietly stops working is worse than no tool. A parent who trusts it may stop being careful. So we test first, against attackers, and publish what we find.
+
+## The result we are looking for
+
+The project succeeds when we can say, with public and repeatable data, which of these is true:
+
+- A protection works within fixed limits of visibility, effect and survival, against stated attackers and models.
+- A protection fails, and we show where and why.
+- A protection works for some attackers and models and not others, and we show the boundary.
+
+A negative result counts as success for the project. It is the outcome we have most reason to expect, and it tells people where not to put their trust.
+
+## Pages in this section
 
 - [Research topics](topics.md): what we have looked into, what the sources say, and where each answer is recorded.
 - [Threat model](threat-model.md): who might attack and what we try to stop.
 - [Test plan](test-plan.md): how we measure success and failure, with fixed numbers.
+- [Results](results.md): what has been measured so far, and what is still empty.
 - [Data and ethics policy](data-and-ethics.md): what data we use and how we follow the safety rules.
 - [Datasets and models](../../research/datasets-and-models.md): the licence of every dataset and model, and what we do not know about them.
 - [Compute options](../../research/compute-options.md): the free and rented GPU services for later steps, and what their terms allow.
+
+## Where we are
 
 No experiment on a real protection has run yet. The measuring tools and the red team attack tools are built and tested on made-up images and toy protections.
 

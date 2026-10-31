@@ -1,9 +1,5 @@
 # Glossary
 
-Reader: anyone who meets a technical word in these documents and wants a plain meaning.
-
-Last reviewed: 23 October 2026
-
 Words are listed in alphabetical order. We add a word the first time a document uses it.
 
 **Admissible result.** An attacked photo that is still close enough to the original to be useful: a PSNR of at least 30 dB and an SSIM of at least 0.90. A result below that does not count as a successful attack.

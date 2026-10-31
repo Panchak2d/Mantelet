@@ -1,9 +1,5 @@
 # Claims ledger
 
-Reader: a researcher, reviewer, or reader who wants to check how we know what we say.
-
-Last reviewed: 23 October 2026
-
 Every public claim in this project is listed here. Each has one label:
 
 - **Measured:** we ran it, the results are in the repository, and they can be repeated.

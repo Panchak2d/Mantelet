@@ -1,9 +1,5 @@
 # Contributing
 
-Reader: someone who wants to help, from first-timer to experienced developer.
-
-Last reviewed: 5 October 2026
-
 Thank you for helping. This page tells you how to start, what we accept, and what we always refuse.
 
 ## Read these first
