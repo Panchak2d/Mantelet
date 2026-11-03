@@ -2,7 +2,7 @@
 
 **An open research project on making it much harder to turn an ordinary photo of a woman or a child into a fake nude image.**
 
-> **Mantelet does not protect anyone yet.** There is no tool to download or use. No protection has been tested on real faces. A photo that has been through a future version could still be misused, and one unprotected photo of the same person could defeat it. Please do not rely on this project to keep any photo safe. If you need help now, read [Get help](docs/get-help.md).
+> **Mantelet does not protect anyone yet.** There is no tool to download or use. The first protection did not pass its first test, on 20 synthetic faces. A photo that has been through a future version could still be misused, and one unprotected photo of the same person could defeat it. Please do not rely on this project to keep any photo safe. If you need help now, read [Get help](docs/get-help.md).
 
 ## Abstract
 
@@ -49,12 +49,12 @@ See the [research overview](docs/research/README.md), the [threat model](docs/re
 |---|---|
 | Image toolkit, difference scores, face match, baseline runner, report generator | Built and tested on made-up images |
 | Red team attacks and toy protections | Built. Run on 20 synthetic faces with toy protections only |
-| First protection (projected gradient descent against an open face model) | Built, with its checks, budget sweep and effect rule. Not yet run on real faces |
-| Gate 1 report | Open. It needs the project owner's runs on real faces |
+| First protection (projected gradient descent against an open face model) | Built and run on 20 synthetic faces. Did not pass Gate 1 |
+| Gate 1 report | Done on 20 synthetic faces, not passed. The next step is the owner's decision. See [results](docs/research/results.md) |
 | Human perception study | Not started |
 | Help guide | Published, with a sources table |
 
-The only Measured claims so far come from toy protections. They show our measuring tools work. They say nothing about a real protection. See [results](docs/research/results.md).
+The Measured claims show our measuring tools work and how the first protection did on 20 synthetic faces. They do not show that any protection works. See [results](docs/research/results.md).
 
 ## Expected outcomes
 

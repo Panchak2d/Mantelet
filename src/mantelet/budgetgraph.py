@@ -9,6 +9,7 @@ for a panel. A missing value leaves a gap in the line. Nothing is smoothed.
 from __future__ import annotations
 
 import math
+import textwrap
 from collections.abc import Sequence
 from html import escape
 from pathlib import Path
@@ -24,6 +25,8 @@ LINE_COLOUR = "#1f5fa8"
 THRESHOLD_COLOUR = "#b3261e"
 TEXT_COLOUR = "#222222"
 GRID_COLOUR = "#d9d9d9"
+TITLE_CHARS = 60
+TITLE_LINE = 18
 
 PANELS = (
     ("psnr", "PSNR against the original (dB)", 30.0, "30 dB floor"),
@@ -150,19 +153,25 @@ def render_budget_graph(points: Sequence[dict], title: str) -> str:
     if len(set(budgets)) != len(budgets):
         raise ValueError("every budget must appear once")
     rows = math.ceil(len(PANELS) / COLUMNS)
-    width, height = PANEL_WIDTH * COLUMNS, PANEL_HEIGHT * rows + 30
+    lines = textwrap.wrap(title, TITLE_CHARS) or [""]
+    header = 12 + TITLE_LINE * len(lines)
+    width, height = PANEL_WIDTH * COLUMNS, PANEL_HEIGHT * rows + header
     body = "".join(
         _panel(index, ordered, key, label, threshold, threshold_label)
         for index, (key, label, threshold, threshold_label) in enumerate(PANELS)
+    )
+    tspans = "".join(
+        f'<tspan x="{MARGIN_LEFT}" dy="{0 if i == 0 else TITLE_LINE}">{escape(line)}</tspan>'
+        for i, line in enumerate(lines)
     )
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
         f'viewBox="0 0 {width} {height}" role="img" aria-labelledby="graph-title">'
         f'<title id="graph-title">{escape(title)}</title>'
         f'<rect width="{width}" height="{height}" fill="#ffffff"/>'
-        f'<g transform="translate(0 30)">{body}</g>'
+        f'<g transform="translate(0 {header})">{body}</g>'
         f'<text x="{MARGIN_LEFT}" y="20" font-family="sans-serif" font-size="14" '
-        f'font-weight="bold" fill="{TEXT_COLOUR}">{escape(title)}</text>'
+        f'font-weight="bold" fill="{TEXT_COLOUR}">{tspans}</text>'
         "</svg>\n"
     )
 

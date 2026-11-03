@@ -52,13 +52,15 @@ We test them on toy protections, which add a hidden pattern that does nothing ag
 
 We then measure how much of the pattern is left, called survival, but only for attacked photos that still look close to the original. The attacks that need a diffusion model are not built yet. A toy result says nothing about a real protection.
 
-### First protection (built, not yet tested on real faces)
+### First protection (built, run on 20 synthetic faces, did not pass Gate 1)
 
 It changes the pixels around a face by a small, fixed amount so that one open face recognition model no longer sees the same person. A computer finds each change by trying small steps and keeping the ones that move the face away from the original. This is called projected gradient descent.
 
 We built a plain version and a version that is also tuned through JPEG compression, because a change tuned without compression is known to wash out. The numbers that decide whether either one passes, including a face that the processing alone loses, are fixed in the [test plan](research/test-plan.md) before any result exists.
 
-Whether it changes anything on real faces is not known yet. A face recognition model is not an editing model, so even a good result would say nothing about editing.
+On 20 synthetic faces it made the face model fail to match the person after the fixed resize, crop and JPEG on most photos. The plain version left 9 of 19 photos matching at its best allowed budget and the JPEG version left 2 of 19. Simple cleanup then undid most of it: a denoising filter alone brought the match back on 18 of 20 photos for both versions. By the numbers we fixed before the run, neither passes Gate 1. See [results](research/results.md).
+
+Whether it changes anything on real people's photos is not known. A face recognition model is not an editing model, so even a good result would say nothing about editing.
 
 ## Where the details are
 

@@ -104,7 +104,7 @@ and uv run python scripts/run_budget_sweep.py --dataset-id facesynthetics \
     --source data/dataset_100.zip --models-dir data/models
 ```
 
-`check_protection.py` checks our crop, the gradient and our JPEG against the limits in the [test plan](../research/test-plan.md) and writes `protection-check.md`. It exits with 2 when a limit is missed. If the crop limit is missed, `uv run python scripts/diagnose_crop.py` with the same arguments prints, for each face, how far the copy's vector moves when it is fed OpenCV's crop, our crop, our crop without rounding, and OpenCV's own warp with our matrix. It changes nothing. `run_budget_sweep.py` protects the 20 sampled photos at each budget, for both `pgd` and `pgd-jpeg`, measures PSNR, SSIM, survival and the face match beside the unprotected photo, and writes `sweep.json`, `sweep-rows.csv` and one graph per kind (`budget-pgd.svg`, `budget-pgd-jpeg.svg`) to `outputs/sweep-facesynthetics-seed0/`. It declares each band on 8 photos kept apart from the 20. It prints how many seconds each kind took. Nobody has timed it on a laptop CPU yet.
+`check_protection.py` checks our crop, the gradient and our JPEG against the limits in the [test plan](../research/test-plan.md) and writes `protection-check.md`. It exits with 2 when a limit is missed. If the crop limit is missed, `uv run python scripts/diagnose_crop.py` with the same arguments prints, for each face, how far the copy's vector moves when it is fed OpenCV's crop, our crop, our crop without rounding, and OpenCV's own warp with our matrix. It changes nothing. `run_budget_sweep.py` protects the 20 sampled photos at each budget, for both `pgd` and `pgd-jpeg`, measures PSNR, SSIM, survival and the face match beside the unprotected photo, and writes `sweep.json`, `sweep-rows.csv` and one graph per kind (`budget-pgd.svg`, `budget-pgd-jpeg.svg`) to `outputs/sweep-facesynthetics-seed0/`. It declares each band on 8 photos kept apart from the 20. It prints how many seconds each kind took. On the owner's machine the 20 photos at 8 budgets took 612 seconds for `pgd` and 775 seconds for `pgd-jpeg`.
 
 Then attack one protection at the budget the sweep reports as `gate_budget` in `sweep.json`:
 
@@ -115,6 +115,8 @@ uv run python scripts/run_redteam.py --dataset-id facesynthetics \
 ```
 
 The report adds the face match beside the unprotected photo, with the three states, and the declared band. Open the graphs in a browser to look at them.
+
+The sweep and the red team script seed the random start of PGD differently, so for the same kind, budget and seed their protected photos differ slightly and a face match can differ on a photo or two. Gate 1 uses the red team numbers.
 
 ## Pinned versions
 

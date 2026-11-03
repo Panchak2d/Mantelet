@@ -4,7 +4,7 @@ This page lists what Mantelet cannot do, what our research cannot show, and how 
 
 ## Mantelet does not protect anyone yet
 
-There is no tool. No photo has been protected. Code for a first protection exists for researchers and has not been tested on real faces. The only runs so far check our own measuring and attack tools, on toy protections that do nothing against any model. Please do not rely on this project to keep any photo safe. If you need help now, read [Get help](get-help.md).
+There is no tool. No photo has been protected. Code for a first protection exists for researchers. On 20 synthetic faces it did not pass our first test, because simple cleanup brings the face match back. The other runs check our own measuring and attack tools, on toy protections that do nothing against any model. Please do not rely on this project to keep any photo safe. If you need help now, read [Get help](get-help.md).
 
 ## If a tool exists one day, it will still have limits
 
@@ -38,6 +38,6 @@ Each public claim is listed in the [claims ledger](../research/claims-ledger.md)
 - **Reported:** a paper says so and we have not repeated it.
 - **Guess:** our own idea, not tested.
 
-Three claims are Measured today. All use toy protections or made-up photos. See [results](research/results.md).
+The Measured claims use toy protections, made-up photos, or 20 synthetic faces with one face model and the first protection. None shows that a protection works. See [results](research/results.md).
 
 If a research gate fails, we say so on the front page and move our effort to the guides.

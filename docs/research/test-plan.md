@@ -210,6 +210,7 @@ Survival says whether the change is still in the photo. The effect is the drop i
 - The other fixed numbers apply: survival at least 50 percent at the centre crop, PSNR at least 30 dB and SSIM at least 0.90 for every counted photo at the chosen budget, and a drop of at least 50 points.
 - **Visibility cannot be measured yet.** The limit of 25 percent noticing needs the human study in Batch 8. Until then only PSNR and SSIM are reported. The Gate 1 report says so, and a result can be a failure on another number but cannot be a full pass.
 - **On record before the run:** a protection tuned without compression is known to lose much of its effect under JPEG (claim C-047), so plain `pgd` may well miss the survival number at budgets that stay above 30 dB. That would show that this kind of protection fails the fixed pipeline. It would not show that no protection can pass.
+- **Outcome of the first run (3 November 2026).** Neither kind passed. Plain `pgd` at budget 12 missed survival and the drop through the pipeline. `pgd-jpeg` at budget 8 passed the drop through the pipeline, and missed survival and the drop against attackers up to level 2. The numbers are in [results](results.md) and claims C-051 and C-052.
 
 ### The check of the pieces
 
@@ -221,7 +222,7 @@ Before any protection is swept, `scripts/check_protection.py` checks three piece
 
 If any limit is missed, no protection is swept until the piece is fixed.
 
-**First run (owner's machine, 20 Face Synthetics faces).** The crop missed: the lowest cosine was 0.998911 against the limit of 0.999. The gradient met its limit (worst gap 1.12e-3) and the JPEG met its limit (mean gap 0.446). The cause is that OpenCV hands the recogniser a crop of whole pixel values, and our crop kept the smooth values. On made-up 512 pixel photos, rounding our crop cut its mean gap to OpenCV's from 0.142 to 0.012 pixel values, so the matrix and the interpolation agree (claim C-050, a Guess until the re-run). The crop now rounds the same way in the forward pass and lets the gradient pass straight through. The limits did not move. The check is run again, and `scripts/diagnose_crop.py` splits any further miss into matrix, interpolation and rounding.
+**First run (owner's machine, 20 Face Synthetics faces).** The crop missed: the lowest cosine was 0.998911 against the limit of 0.999. The gradient met its limit (worst gap 1.12e-3) and the JPEG met its limit (mean gap 0.446). The cause is that OpenCV hands the recogniser a crop of whole pixel values, and our crop kept the smooth values. On made-up 512 pixel photos, rounding our crop cut its mean gap to OpenCV's from 0.142 to 0.012 pixel values, so the matrix and the interpolation agree (claim C-050, a Guess until the re-run). The crop now rounds the same way in the forward pass and lets the gradient pass straight through. The limits did not move. **Re-run (owner's machine, same 20 faces, seed 0, 3 November 2026).** The crop met its limit: the lowest cosine rose to 0.999904. The gradient and JPEG results were unchanged. The check passed, and the sweep was run (claim C-050). `scripts/diagnose_crop.py` was not needed and was not run, so the gap is not split into matrix, interpolation and rounding.
 
 ## The datasets
 

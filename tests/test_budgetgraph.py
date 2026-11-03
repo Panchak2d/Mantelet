@@ -49,6 +49,18 @@ def test_a_title_is_escaped_so_it_cannot_inject_markup():
     assert parse(POINTS, "<script>x</script> & more") is not None
 
 
+def test_a_long_title_is_wrapped_inside_the_width_and_the_panels_move_down():
+    long_title = (
+        "pgd-jpeg: budget sweep on 20 Face Synthetics (Microsoft), 512 pixel rendered portraits"
+    )
+    short, wrapped = parse(POINTS), parse(POINTS, long_title)
+    spans = [e for e in wrapped.iter() if tag(e) == "tspan"]
+    assert len(spans) == 2
+    assert all(len(span.text) <= budgetgraph.TITLE_CHARS for span in spans)
+    assert " ".join(span.text for span in spans) == long_title
+    assert int(wrapped.get("height")) == int(short.get("height")) + budgetgraph.TITLE_LINE
+
+
 @pytest.mark.parametrize(
     "bad",
     [[], [{"budget": 0}], [{"budget": 2}, {"budget": 2}], [{"budget": float("nan")}]],

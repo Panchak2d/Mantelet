@@ -1,6 +1,6 @@
 # Architecture
 
-There is no protection code yet. The only machine learning models are the two face models used for measuring. The only protections are toys, made to test the attack tools. This page lists what exists today. It grows as the code grows.
+The first protection is code for researchers: projected gradient descent against a PyTorch copy of a face model, in `src/mantelet/protect.py`. The other protections are toys, made to test the attack tools. The face models are the two used for measuring and the copy of SFace. This page lists what exists today. It grows as the code grows.
 
 ## Folders
 
